@@ -72,40 +72,38 @@
 </div>
 
 <script>
-const TOKEN = "d6jXb1k3oGZpFq4n8sYtC2WvLxJmR9QeH5uNaKz";
-const API_URL = "https://customer.ktt.io/thenpandiyan/vehicles";
+const API_URL = "https://www.zohoapis.in/creator/custom/thenpandiyan/Get_Live_Vehicles?publickey=OWqTfRFD0wgnrjbppDe3jBYUE";
 
 function fetchVehicles()
 {
   document.getElementById("grid").innerHTML = '<div class="loading">⏳ Fetching live vehicle data...</div>';
-  fetch(API_URL,
-  {
-    method: "GET",
-    headers: { "X-AT-AccessToken": TOKEN }
-  })
+  fetch(API_URL)
   .then(function(res) { return res.json(); })
   .then(function(data)
   {
-    if(data.success && data.results)
+    console.log("API Response:", JSON.stringify(data));
+    var vehicles = null;
+    if(data.result && data.result.vehicles)
     {
-      renderVehicles(data.results);
+      vehicles = data.result.vehicles;
+    }
+    else if(data.vehicles)
+    {
+      vehicles = data.vehicles;
+    }
+    if(vehicles && vehicles.length > 0)
+    {
+      renderVehicles(vehicles);
     }
     else
     {
-      document.getElementById("grid").innerHTML = '<div class="error">❌ API returned no data</div>';
+      document.getElementById("grid").innerHTML = '<div class="error">❌ No vehicle data returned<br><small>' + JSON.stringify(data) + '</small></div>';
     }
   })
   .catch(function(err)
   {
-    document.getElementById("grid").innerHTML = '<div class="error">❌ ' + err.message + '<br><small>This may be a CORS issue — the KTT API may need to allow requests from this domain.</small></div>';
+    document.getElementById("grid").innerHTML = '<div class="error">❌ ' + err.message + '</div>';
   });
-}
-
-function getStatus(spd, ign)
-{
-  if(spd > 0 && ign == 1) return "IN TRANSIT";
-  if(spd == 0 && ign == 1) return "STOPPED";
-  return "IDLE";
 }
 
 function renderVehicles(vehicles)
@@ -116,7 +114,7 @@ function renderVehicles(vehicles)
 
   vehicles.forEach(function(v)
   {
-    var status = getStatus(v.spd, v.ign);
+    var status = v.status || "IDLE";
     var cardClass = status==="IN TRANSIT" ? "card-transit" : status==="STOPPED" ? "card-stopped" : "card-idle";
     var badgeClass = status==="IN TRANSIT" ? "badge-transit" : status==="STOPPED" ? "badge-stopped" : "badge-idle";
 
@@ -124,17 +122,23 @@ function renderVehicles(vehicles)
     else if(status==="STOPPED") stopped++;
     else idle++;
 
+    var lat = v.lat || "0";
+    var lon = v.lon || "0";
+    var spd = v.spd || "0";
+    var ign = v.ign || "0";
+    var vno = v.vno || "Unknown";
+    var time = v.time || "-";
+
     var card = document.createElement("div");
     card.className = "card " + cardClass;
     card.innerHTML =
-      "<div class='vno'>🚛 " + v.vno + "</div>" +
+      "<div class='vno'>🚛 " + vno + "</div>" +
       "<span class='badge " + badgeClass + "'>" + status + "</span>" +
-      "<div class='row'><span class='lbl'>Speed</span><span class='val'>" + v.spd + " km/h</span></div>" +
-      "<div class='row'><span class='lbl'>Ignition</span><span class='val'>" + (v.ign==1?"🟢 ON":"🔴 OFF") + "</span></div>" +
-      "<div class='row'><span class='lbl'>Course</span><span class='val'>" + v.crs + "°</span></div>" +
-      "<div class='row'><span class='lbl'>GPS Time</span><span class='val'>" + v.time + "</span></div>" +
-      "<div class='coords'>📍 " + v.lat + ", " + v.lon + "</div>" +
-      "<button class='mapbtn' onclick='openMap(" + v.lat + "," + v.lon + ",\"" + v.vno + "\")'>🗺️ View on Map</button>";
+      "<div class='row'><span class='lbl'>Speed</span><span class='val'>" + spd + " km/h</span></div>" +
+      "<div class='row'><span class='lbl'>Ignition</span><span class='val'>" + (ign=="1"?"🟢 ON":"🔴 OFF") + "</span></div>" +
+      "<div class='row'><span class='lbl'>GPS Time</span><span class='val'>" + time + "</span></div>" +
+      "<div class='coords'>📍 " + lat + ", " + lon + "</div>" +
+      "<button class='mapbtn' onclick='openMap(" + lat + "," + lon + ",\"" + vno + "\")'>🗺️ View on Map</button>";
 
     grid.appendChild(card);
   });
