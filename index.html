@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thenpandiyan Fleet Map</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+  body { background:#f0f2f5; }
+  .header { background:#1a1a2e; color:white; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; }
+  .header h2 { font-size:15px; }
+  .stats { display:flex; background:#16213e; color:white; padding:8px 20px; gap:24px; }
+  .stat { text-align:center; }
+  .stat-val { font-size:20px; font-weight:bold; }
+  .stat-lbl { font-size:10px; color:#aaa; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; padding:16px; }
+  .card { background:white; border-radius:10px; padding:16px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+  .card-transit { border-left:5px solid #2ecc71; }
+  .card-stopped { border-left:5px solid #f39c12; }
+  .card-idle { border-left:5px solid #e74c3c; }
+  .vno { font-size:15px; font-weight:bold; margin-bottom:6px; color:#1a1a2e; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:white; margin-bottom:10px; }
+  .badge-transit { background:#2ecc71; }
+  .badge-stopped { background:#f39c12; }
+  .badge-idle { background:#e74c3c; }
+  .row { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px solid #f5f5f5; }
+  .lbl { color:#999; }
+  .val { font-weight:bold; color:#333; }
+  .coords { font-size:10px; color:#bbb; margin-top:8px; }
+  .mapbtn { display:block; margin-top:10px; background:#1a1a2e; color:white; text-align:center; padding:7px; border-radius:6px; text-decoration:none; font-size:12px; cursor:pointer; border:none; width:100%; }
+  .mapbtn:hover { background:#533483; }
+  .refresh-btn { background:#0f3460; color:white; border:none; padding:6px 14px; border-radius:4px; cursor:pointer; font-size:12px; }
+  .loading { text-align:center; padding:40px; color:#888; font-size:14px; }
+  .error { text-align:center; padding:40px; color:#e74c3c; font-size:14px; }
+  #map-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; }
+  #map-modal.show { display:flex; }
+  .modal-content { background:white; border-radius:10px; overflow:hidden; width:90%; height:80%; }
+  .modal-header { background:#1a1a2e; color:white; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
+  .close-btn { background:none; border:none; color:white; font-size:20px; cursor:pointer; }
+  #map-iframe { width:100%; height:calc(100% - 44px); border:none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h2>🚛 THENPANDIYAN TRANSPORT — Live Fleet</h2>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span id="lastUpdate" style="font-size:11px;color:#aaa"></span>
+    <button class="refresh-btn" onclick="fetchVehicles()">🔄 Refresh</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-val" id="cTotal">-</div><div class="stat-lbl">TOTAL</div></div>
+  <div class="stat"><div class="stat-val" style="color:#2ecc71" id="cTransit">-</div><div class="stat-lbl">IN TRANSIT</div></div>
+  <div class="stat"><div class="stat-val" style="color:#f39c12" id="cStopped">-</div><div class="stat-lbl">STOPPED</div></div>
+  <div class="stat"><div class="stat-val" style="color:#e74c3c" id="cIdle">-</div><div class="stat-lbl">IDLE</div></div>
+</div>
+
+<div id="grid" class="grid">
+  <div class="loading">⏳ Fetching live vehicle data...</div>
+</div>
+
+<div id="map-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span id="modal-title">Vehicle Location</span>
+      <button class="close-btn" onclick="closeMap()">✕</button>
+    </div>
+    <iframe id="map-iframe" src=""></iframe>
+  </div>
+</div>
+
+<script>
+const TOKEN = "d6jXb1k3oGZpFq4n8sYtC2WvLxJmR9QeH5uNaKz";
+const API_URL = "https://customer.ktt.io/thenpandiyan/vehicles";
+
+function fetchVehicles()
+{
+  document.getElementById("grid").innerHTML = '<div class="loading">⏳ Fetching live vehicle data...</div>';
+  fetch(API_URL,
+  {
+    method: "GET",
+    headers: { "X-AT-AccessToken": TOKEN }
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data)
+  {
+    if(data.success && data.results)
+    {
+      renderVehicles(data.results);
+    }
+    else
+    {
+      document.getElementById("grid").innerHTML = '<div class="error">❌ API returned no data</div>';
+    }
+  })
+  .catch(function(err)
+  {
+    document.getElementById("grid").innerHTML = '<div class="error">❌ ' + err.message + '<br><small>This may be a CORS issue — the KTT API may need to allow requests from this domain.</small></div>';
+  });
+}
+
+function getStatus(spd, ign)
+{
+  if(spd > 0 && ign == 1) return "IN TRANSIT";
+  if(spd == 0 && ign == 1) return "STOPPED";
+  return "IDLE";
+}
+
+function renderVehicles(vehicles)
+{
+  var grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  var transit=0, stopped=0, idle=0;
+
+  vehicles.forEach(function(v)
+  {
+    var status = getStatus(v.spd, v.ign);
+    var cardClass = status==="IN TRANSIT" ? "card-transit" : status==="STOPPED" ? "card-stopped" : "card-idle";
+    var badgeClass = status==="IN TRANSIT" ? "badge-transit" : status==="STOPPED" ? "badge-stopped" : "badge-idle";
+
+    if(status==="IN TRANSIT") transit++;
+    else if(status==="STOPPED") stopped++;
+    else idle++;
+
+    var card = document.createElement("div");
+    card.className = "card " + cardClass;
+    card.innerHTML =
+      "<div class='vno'>🚛 " + v.vno + "</div>" +
+      "<span class='badge " + badgeClass + "'>" + status + "</span>" +
+      "<div class='row'><span class='lbl'>Speed</span><span class='val'>" + v.spd + " km/h</span></div>" +
+      "<div class='row'><span class='lbl'>Ignition</span><span class='val'>" + (v.ign==1?"🟢 ON":"🔴 OFF") + "</span></div>" +
+      "<div class='row'><span class='lbl'>Course</span><span class='val'>" + v.crs + "°</span></div>" +
+      "<div class='row'><span class='lbl'>GPS Time</span><span class='val'>" + v.time + "</span></div>" +
+      "<div class='coords'>📍 " + v.lat + ", " + v.lon + "</div>" +
+      "<button class='mapbtn' onclick='openMap(" + v.lat + "," + v.lon + ",\"" + v.vno + "\")'>🗺️ View on Map</button>";
+
+    grid.appendChild(card);
+  });
+
+  document.getElementById("cTotal").innerText = vehicles.length;
+  document.getElementById("cTransit").innerText = transit;
+  document.getElementById("cStopped").innerText = stopped;
+  document.getElementById("cIdle").innerText = idle;
+  document.getElementById("lastUpdate").innerText = "Live • " + new Date().toLocaleTimeString();
+}
+
+function openMap(lat, lon, vno)
+{
+  document.getElementById("modal-title").innerText = "📍 " + vno + " — Live Location";
+  document.getElementById("map-iframe").src = "https://maps.google.com/maps?q=" + lat + "," + lon + "&z=15&output=embed";
+  document.getElementById("map-modal").classList.add("show");
+}
+
+function closeMap()
+{
+  document.getElementById("map-modal").classList.remove("show");
+  document.getElementById("map-iframe").src = "";
+}
+
+fetchVehicles();
+setInterval(fetchVehicles, 300000);
+</script>
+
+</body>
+</html>
