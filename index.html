@@ -3,65 +3,301 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thenpandiyan Fleet Map</title>
+<title>Thenpandiyan Fleet Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
-  body { background:#f0f2f5; }
-  .header { background:#1a1a2e; color:white; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; }
-  .header h2 { font-size:15px; }
-  .stats { display:flex; background:#16213e; color:white; padding:8px 20px; gap:24px; }
-  .stat { text-align:center; }
-  .stat-val { font-size:20px; font-weight:bold; }
-  .stat-lbl { font-size:10px; color:#aaa; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; padding:16px; }
-  .card { background:white; border-radius:10px; padding:16px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
-  .card-transit { border-left:5px solid #2ecc71; }
-  .card-stopped { border-left:5px solid #f39c12; }
-  .card-idle { border-left:5px solid #e74c3c; }
-  .vno { font-size:15px; font-weight:bold; margin-bottom:6px; color:#1a1a2e; }
-  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:white; margin-bottom:10px; }
-  .badge-transit { background:#2ecc71; }
-  .badge-stopped { background:#f39c12; }
-  .badge-idle { background:#e74c3c; }
-  .row { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px solid #f5f5f5; }
-  .lbl { color:#999; }
-  .val { font-weight:bold; color:#333; }
-  .coords { font-size:10px; color:#bbb; margin-top:8px; }
-  .mapbtn { display:block; margin-top:10px; background:#1a1a2e; color:white; text-align:center; padding:7px; border-radius:6px; text-decoration:none; font-size:12px; cursor:pointer; border:none; width:100%; }
-  .mapbtn:hover { background:#533483; }
-  .refresh-btn { background:#0f3460; color:white; border:none; padding:6px 14px; border-radius:4px; cursor:pointer; font-size:12px; }
-  .loading { text-align:center; padding:40px; color:#888; font-size:14px; }
-  .error { text-align:center; padding:40px; color:#e74c3c; font-size:14px; }
-  #map-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; }
-  #map-modal.show { display:flex; }
-  .modal-content { background:white; border-radius:10px; overflow:hidden; width:90%; height:80%; }
-  .modal-header { background:#1a1a2e; color:white; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .close-btn { background:none; border:none; color:white; font-size:20px; cursor:pointer; }
+  :root {
+    --bg:         #f4f6f4;
+    --surface:    #ffffff;
+    --card:       #ffffff;
+    --border:     #e2e8e2;
+    --border2:    #d0d8d0;
+    --green:      #1a7a3f;
+    --green-mid:  #22a854;
+    --green-lt:   #e8f5ee;
+    --green-acc:  #16a34a;
+    --header-bg:  #111714;
+    --text:       #1a2020;
+    --text2:      #4a5a50;
+    --muted:      #8a9e90;
+    --transit:    #16a34a;
+    --stopped:    #d97706;
+    --idle:       #dc2626;
+    --transit-bg: #f0fdf4;
+    --stopped-bg: #fffbeb;
+    --idle-bg:    #fef2f2;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* ── Header ───────────────────────────────── */
+  .header {
+    background:var(--header-bg);
+    padding:0 28px;
+    height:52px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .logo-box {
+    width:34px; height:34px; background:var(--green); border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:800; color:white; font-family:'DM Mono',monospace;
+    letter-spacing:-0.03em; flex-shrink:0;
+  }
+  .brand-name { font-size:15px; font-weight:600; color:#ffffff; letter-spacing:0.01em; }
+  .brand-sub  { font-size:11px; color:var(--green-mid); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
+  .header-right { display:flex; align-items:center; gap:12px; }
+  #lastUpdate { font-size:11px; color:#6b7a6e; font-family:'DM Mono',monospace; }
+  .refresh-btn {
+    background:var(--green); color:white; border:none;
+    padding:6px 16px; border-radius:5px; cursor:pointer;
+    font-size:12px; font-family:'Inter',sans-serif; font-weight:500;
+    letter-spacing:0.03em; transition:background .2s;
+  }
+  .refresh-btn:hover { background:var(--green-acc); }
+  .fleet-tag {
+    background:transparent; border:1px solid var(--green-mid); color:var(--green-mid);
+    font-size:11px; font-weight:600; padding:4px 12px; border-radius:4px;
+    letter-spacing:0.1em; text-transform:uppercase;
+  }
+
+  /* ── Stats bar ─────────────────────────────── */
+  .stats {
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    display:flex;
+  }
+  .stat {
+    flex:1; padding:14px 20px; text-align:center;
+    border-right:1px solid var(--border);
+    position:relative;
+  }
+  .stat:last-child { border-right:none; }
+  .stat-val { font-size:26px; font-weight:700; line-height:1; font-family:'DM Mono',monospace; }
+  .stat-lbl { font-size:10px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; font-weight:500; }
+  .c-total   { color:var(--text); }
+  .c-transit { color:var(--transit); }
+  .c-stopped { color:var(--stopped); }
+  .c-idle    { color:var(--idle); }
+
+  /* ── Section header ────────────────────────── */
+  .section-wrap { padding:24px 28px 0; }
+  .section-hdr {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .section-title {
+    font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--green); display:flex; align-items:center; gap:8px;
+  }
+  .section-title::before {
+    content:""; display:inline-block; width:28px; height:2px; background:var(--green); border-radius:2px;
+  }
+  .section-count { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
+
+  /* ── Toolbar ────────────────────────────────── */
+  .toolbar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+  .search-wrap { flex:1; min-width:220px; position:relative; }
+  .search-wrap input {
+    width:100%; background:var(--surface); border:1px solid var(--border2);
+    color:var(--text); padding:8px 12px 8px 34px; border-radius:6px;
+    font-size:13px; outline:none; font-family:'Inter',sans-serif;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .search-wrap input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(26,122,63,0.08); }
+  .search-wrap .s-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; pointer-events:none; }
+  .filter-pills { display:flex; gap:6px; flex-wrap:wrap; }
+  .pill {
+    padding:5px 12px; border-radius:20px; font-size:11px; font-weight:500;
+    cursor:pointer; transition:all .15s; white-space:nowrap;
+    border:1px solid var(--border2); color:var(--text2); background:var(--surface);
+    font-family:'Inter',sans-serif;
+  }
+  .pill:hover { border-color:var(--green); color:var(--green); }
+  .pill.active { background:var(--green); color:white; border-color:var(--green); }
+
+  /* ── Location cards grid ───────────────────── */
+  .loc-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(290px,1fr));
+    gap:12px; padding-bottom:28px;
+  }
+  .loc-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:8px; overflow:hidden; transition:box-shadow .2s, border-color .2s;
+  }
+  .loc-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.07); border-color:var(--border2); }
+  .loc-head { padding:12px 14px 10px; border-bottom:1px solid var(--border); }
+  .loc-top  { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+  .loc-name { font-size:13px; font-weight:600; color:var(--text); line-height:1.3; }
+  .loc-type-badge {
+    font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px;
+    letter-spacing:0.08em; text-transform:uppercase; flex-shrink:0;
+    margin-top:2px; font-family:'DM Mono',monospace;
+    background:var(--green-lt); color:var(--green); border:1px solid #b7dfc6;
+  }
+  .loc-contractor { font-size:11px; color:var(--muted); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .loc-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; align-items:center; }
+  .tag-state {
+    font-size:10px; padding:2px 8px; border-radius:3px;
+    background:#eef2ee; color:var(--green); font-weight:600;
+    border:1px solid #c8dccb;
+  }
+  .tag-cap {
+    font-size:10px; padding:2px 7px; border-radius:3px;
+    background:var(--bg); color:var(--text2);
+    border:1px solid var(--border2); font-family:'DM Mono',monospace;
+  }
+  .loc-coords { font-size:10px; color:var(--muted); margin-top:6px; font-family:'DM Mono',monospace; }
+
+  /* vehicles inside loc card */
+  .loc-vehicles { padding:8px 14px 10px; }
+  .loc-veh-hdr { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; padding-bottom:6px; font-weight:500; }
+  .veh-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:5px 0; border-bottom:1px solid #f0f4f0;
+  }
+  .veh-row:last-of-type { border-bottom:none; }
+  .veh-vno { font-size:12px; font-weight:600; color:var(--text); font-family:'DM Mono',monospace; }
+  .veh-right { display:flex; align-items:center; gap:8px; }
+  .veh-dist { font-size:12px; font-weight:700; color:var(--green); font-family:'DM Mono',monospace; }
+  .veh-st {
+    font-size:9px; font-weight:600; padding:2px 6px; border-radius:3px;
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .s-transit { background:var(--transit-bg); color:var(--transit); }
+  .s-stopped { background:var(--stopped-bg); color:var(--stopped); }
+  .s-idle    { background:var(--idle-bg);    color:var(--idle); }
+  .no-veh { font-size:11px; color:var(--muted); padding:6px 0; font-style:italic; }
+  .show-more-btn {
+    font-size:11px; color:var(--green); cursor:pointer; padding:4px 0 0;
+    background:none; border:none; font-family:'Inter',sans-serif;
+    font-weight:500; letter-spacing:0.01em;
+  }
+  .hidden-veh { display:none; }
+  .loc-card.hidden { display:none; }
+
+  /* ── Divider ───────────────────────────────── */
+  .page-divider { border:none; border-top:1px solid var(--border); margin:0 28px; }
+
+  /* ── Vehicle cards ─────────────────────────── */
+  .veh-grid {
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
+    gap:12px; padding-bottom:32px;
+  }
+  .v-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:8px;
+    padding:14px 16px; transition:box-shadow .2s, border-color .2s;
+    border-top:3px solid transparent;
+  }
+  .v-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+  .v-card.transit { border-top-color:var(--transit); }
+  .v-card.stopped { border-top-color:var(--stopped); }
+  .v-card.idle    { border-top-color:var(--idle); }
+  .v-vno { font-size:15px; font-weight:700; color:var(--text); margin-bottom:6px; }
+  .v-badge {
+    display:inline-block; font-size:10px; font-weight:600; padding:3px 9px;
+    border-radius:4px; margin-bottom:10px; letter-spacing:0.05em;
+    font-family:'DM Mono',monospace;
+  }
+  .b-transit { background:var(--transit-bg); color:var(--transit); }
+  .b-stopped { background:var(--stopped-bg); color:var(--stopped); }
+  .b-idle    { background:var(--idle-bg);    color:var(--idle); }
+  .v-row { display:flex; justify-content:space-between; font-size:12px; padding:5px 0; border-bottom:1px solid #f0f4f0; }
+  .v-row:last-of-type { border-bottom:none; }
+  .v-lbl { color:var(--muted); font-weight:400; }
+  .v-val { font-weight:600; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; }
+  .v-coords { font-size:10px; color:var(--muted); margin-top:8px; font-family:'DM Mono',monospace; }
+  .mapbtn {
+    display:block; margin-top:10px; background:var(--green-lt); color:var(--green);
+    text-align:center; padding:7px; border-radius:5px; cursor:pointer;
+    border:1px solid #b7dfc6; font-size:12px; font-weight:500;
+    font-family:'Inter',sans-serif; width:100%; transition:all .2s;
+  }
+  .mapbtn:hover { background:var(--green); color:white; border-color:var(--green); }
+
+  /* ── Map modal ─────────────────────────────── */
+  .map-overlay {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.55); z-index:9999; justify-content:center; align-items:center;
+  }
+  .map-overlay.show { display:flex; }
+  .modal-content {
+    background:white; border-radius:10px; overflow:hidden;
+    width:90%; height:80%; box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-header {
+    background:var(--header-bg); color:white; padding:10px 18px;
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:14px; font-weight:600;
+  }
+  .close-btn { background:none; border:none; color:#8a9e90; font-size:22px; cursor:pointer; line-height:1; }
+  .close-btn:hover { color:var(--idle); }
   #map-iframe { width:100%; height:calc(100% - 44px); border:none; }
+
+  /* ── Loading / Error ───────────────────────── */
+  .loading { text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; letter-spacing:0.05em; }
+  .error   { text-align:center; padding:40px 20px; color:var(--idle); font-size:13px; }
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <div class="header">
-  <h2>🚛 THENPANDIYAN TRANSPORT — Live Fleet</h2>
-  <div style="display:flex;gap:10px;align-items:center">
-    <span id="lastUpdate" style="font-size:11px;color:#aaa"></span>
-    <button class="refresh-btn" onclick="fetchVehicles()">🔄 Refresh</button>
+  <div class="header-left">
+    <div class="logo-box">TT</div>
+    <div>
+      <div class="brand-name">Thenpandiyan Transport</div>
+      <div class="brand-sub">Live Fleet Dashboard</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="lastUpdate"></span>
+    <button class="refresh-btn" onclick="fetchVehicles()">↻ Refresh</button>
+    <span class="fleet-tag">LPG Bulk Transport</span>
   </div>
 </div>
 
+<!-- Stats -->
 <div class="stats">
-  <div class="stat"><div class="stat-val" id="cTotal">-</div><div class="stat-lbl">TOTAL</div></div>
-  <div class="stat"><div class="stat-val" style="color:#2ecc71" id="cTransit">-</div><div class="stat-lbl">IN TRANSIT</div></div>
-  <div class="stat"><div class="stat-val" style="color:#f39c12" id="cStopped">-</div><div class="stat-lbl">STOPPED</div></div>
-  <div class="stat"><div class="stat-val" style="color:#e74c3c" id="cIdle">-</div><div class="stat-lbl">IDLE</div></div>
+  <div class="stat"><div class="stat-val c-total"   id="cTotal">—</div><div class="stat-lbl">Total Vehicles</div></div>
+  <div class="stat"><div class="stat-val c-transit" id="cTransit">—</div><div class="stat-lbl">In Transit</div></div>
+  <div class="stat"><div class="stat-val c-stopped" id="cStopped">—</div><div class="stat-lbl">Stopped</div></div>
+  <div class="stat"><div class="stat-val c-idle"    id="cIdle">—</div><div class="stat-lbl">Idle</div></div>
 </div>
 
-<div id="grid" class="grid">
-  <div class="loading">⏳ Fetching live vehicle data...</div>
+<!-- Loading Locations -->
+<div class="section-wrap">
+  <div class="section-hdr">
+    <div class="section-title">Loading Locations — Nearest Vehicles</div>
+    <div class="section-count" id="locCount"></div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="s-icon">🔍</span>
+      <input type="text" id="locSearch" placeholder="Search by location, contractor or state…" oninput="filterLocations()">
+    </div>
+    <div class="filter-pills" id="statePills"></div>
+  </div>
+  <div class="loc-grid" id="locGrid">
+    <div class="loading">⏳ Fetching vehicle data…</div>
+  </div>
 </div>
 
-<div id="map-modal">
+<hr class="page-divider">
+
+<!-- All Vehicles -->
+<div class="section-wrap" style="padding-top:24px">
+  <div class="section-hdr">
+    <div class="section-title">All Vehicles — Live Status</div>
+  </div>
+  <div class="veh-grid" id="vehGrid">
+    <div class="loading">⏳ Loading…</div>
+  </div>
+</div>
+
+<!-- Map Modal -->
+<div class="map-overlay" id="mapModal">
   <div class="modal-content">
     <div class="modal-header">
       <span id="modal-title">Vehicle Location</span>
@@ -74,90 +310,251 @@
 <script>
 const API_URL = "https://thenpandiyan-fleet-proxy.ratulpal1114.workers.dev/";
 
-function getStatus(spd, ign)
-{
-  if(spd > 0 && ign == 1) return "IN TRANSIT";
-  if(spd == 0 && ign == 1) return "STOPPED";
+const LOADING_LOCATIONS = [
+  { name:"Jaigad - Ratnagiri",                  lat:17.296447, lon:73.212658, contractor:"",                                           state:"Maharashtra",       capacity:"",                              type:"Load" },
+  { name:"AGS Mumbai",                           lat:18.998543, lon:72.829738, contractor:"ASHOK LEYLAND LIMITED",                      state:"Maharashtra",       capacity:"18MT, 20.55MT, 21MT",           type:"Load" },
+  { name:"Pune - BPCL",                         lat:18.459001, lon:74.091644, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Maharashtra",       capacity:"18MT, 20.55MT, 21MT",           type:"Load" },
+  { name:"BPCL - Palakkad",                     lat:10.783561, lon:76.781168, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Kerala",            capacity:"18MT, 20.55MT",                 type:"Load" },
+  { name:"Cochin - KL",                         lat:9.976313,  lon:76.384636, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Kerala",            capacity:"18MT, 20.55MT",                 type:"Load" },
+  { name:"Vizak - AP",                          lat:17.712658, lon:83.249949, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Andhra Pradesh",    capacity:"18MT",                          type:"Load" },
+  { name:"Uran - Mumbai",                       lat:18.874363, lon:72.957363, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Maharashtra",       capacity:"18MT",                          type:"Load" },
+  { name:"Mangalore - HPCL",                    lat:12.979143, lon:74.836006, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Karnataka",         capacity:"18MT",                          type:"Load" },
+  { name:"SHV",                                 lat:10.939962, lon:77.067849, contractor:"Covai LPG",                                  state:"Tamil Nadu",        capacity:"16MT, 18MT, 20.55MT, 21MT",     type:"Load" },
+  { name:"Loni - HPCL",                        lat:18.490726, lon:74.012182, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Jammu and Kashmir", capacity:"15.5MT",                        type:"Load" },
+  { name:"Yediyur - KA HPCL",                  lat:12.978687, lon:76.884497, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Karnataka",         capacity:"18MT",                          type:"Load" },
+  { name:"Bahadurgarh",                         lat:28.733326, lon:76.856017, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Haryana",           capacity:"12MT, 16MT",                    type:"Load" },
+  { name:"Bhatinda - Punjab",                   lat:30.164380, lon:74.981428, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Punjab",            capacity:"15.5MT",                        type:"Load" },
+  { name:"Bahadurgarh - HPCL",                 lat:28.734938, lon:76.856792, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Haryana",           capacity:"12MT, 15.5MT, 16MT",            type:"Load" },
+  { name:"IOT - Puduchatram",                   lat:11.390985, lon:78.177815, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Tamil Nadu",        capacity:"1MT",                           type:"Load" },
+  { name:"IOCL (KASO) - Yediyur",              lat:12.989714, lon:77.829266, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Karnataka",         capacity:"18MT",                          type:"Load" },
+  { name:"IOCL (KLSO) - MRPL HPCL",            lat:12.991312, lon:74.837955, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Kerala",            capacity:"18MT",                          type:"Load" },
+  { name:"Paradeep",                            lat:20.282573, lon:86.628873, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Odisha",            capacity:"16MT, 18MT",                    type:"Load" },
+  { name:"AGS Mangalore",                       lat:12.914778, lon:74.815592, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Karnataka",         capacity:"18MT, 21MT",                    type:"Load" },
+  { name:"CPCL - Chennai",                      lat:13.181839, lon:80.261925, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Tamil Nadu",        capacity:"15.5MT, 16MT, 18MT, 20.55MT, 21MT", type:"Load" },
+  { name:"IPPL - Chennai",                      lat:13.252002, lon:80.302308, contractor:"Indianoil Petronas (P) Ltd (IPPL)",          state:"Tamil Nadu",        capacity:"",                              type:"Load" },
+  { name:"IPPL - Haldia",                       lat:22.078166, lon:88.109810, contractor:"Indianoil Petronas (P) Ltd (IPPL)",          state:"West Bengal",       capacity:"",                              type:"Load" },
+  { name:"Vinathi Organics Limited",            lat:19.060820, lon:72.868269, contractor:"KOTHARI PETROCHEMICALS LTD.",                state:"Maharashtra",       capacity:"18MT",                          type:"Load" },
+  { name:"Vadodara - Reliance",                 lat:22.372455, lon:73.106430, contractor:"KOTHARI PETROCHEMICALS LTD.",                state:"Gujarat",           capacity:"18MT, 21MT",                    type:"Load" },
+  { name:"AGS Bangalore - Kwality",             lat:12.978723, lon:77.551139, contractor:"Kwality Gas Bottlers (P) Ltd.",              state:"Karnataka",         capacity:"18MT, 21MT",                    type:"Load" },
+  { name:"TOTAL Bengaluru",                     lat:13.100327, lon:77.358752, contractor:"SIPANI ENERGY LIMITED",                      state:"Karnataka",         capacity:"12MT",                          type:"Load" },
+  { name:"CETEX",                               lat:13.082616, lon:80.270724, contractor:"Sree LPG (P) Ltd.",                          state:"Tamil Nadu",        capacity:"18MT, 20.55MT",                 type:"Load" },
+  { name:"Super Gas - Chennai",                 lat:12.928515, lon:79.919108, contractor:"Super Gas - Chennai",                        state:"Tamil Nadu",        capacity:"18MT, 21MT",                    type:"Load" },
+  { name:"PETREGAZ - Krishnapatnam, Nellore",  lat:14.275208, lon:80.136919, contractor:"Thenpandiyan LPG Import Terminal (TLIT)",    state:"Andhra Pradesh",    capacity:"7MT, 12MT, 15.5MT, 18MT, 21MT",type:"Load" }
+];
+
+// Unique sorted states
+var allStates = [];
+LOADING_LOCATIONS.forEach(function(l) {
+  if(l.state && allStates.indexOf(l.state) === -1) allStates.push(l.state);
+});
+allStates.sort();
+
+var activeState = "ALL";
+
+// Build pills
+(function() {
+  var c = document.getElementById("statePills");
+  function makePill(label, value) {
+    var p = document.createElement("span");
+    p.className = "pill" + (value === "ALL" ? " active" : "");
+    p.textContent = label;
+    p.onclick = function() { setStateFilter(value); };
+    c.appendChild(p);
+  }
+  makePill("All States", "ALL");
+  allStates.forEach(function(s) { makePill(s, s); });
+})();
+
+function setStateFilter(state) {
+  activeState = state;
+  document.querySelectorAll(".pill").forEach(function(p) {
+    var matches = (state === "ALL" && p.textContent === "All States") ||
+                  (p.textContent === state);
+    p.classList.toggle("active", matches);
+  });
+  filterLocations();
+}
+
+function haversine(lat1,lon1,lat2,lon2) {
+  var R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+
+        Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+        Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function getStatus(spd,ign) {
+  if(spd>0 && ign==1) return "TRANSIT";
+  if(spd==0 && ign==1) return "STOPPED";
   return "IDLE";
 }
 
-function fetchVehicles()
-{
-  document.getElementById("grid").innerHTML = '<div class="loading">⏳ Fetching live vehicle data...</div>';
-  fetch(API_URL)
-  .then(function(res) { return res.json(); })
-  .then(function(data)
-  {
-    console.log("API Response:", JSON.stringify(data));
-    if(data.success && data.results && data.results.length > 0)
-    {
-      renderVehicles(data.results);
-    }
-    else
-    {
-      document.getElementById("grid").innerHTML = '<div class="error">❌ No vehicle data returned<br><small>' + JSON.stringify(data) + '</small></div>';
-    }
-  })
-  .catch(function(err)
-  {
-    document.getElementById("grid").innerHTML = '<div class="error">❌ ' + err.message + '</div>';
-  });
+function fmtDist(km) {
+  if(km<1) return (km*1000).toFixed(0)+" m";
+  if(km<10) return km.toFixed(1)+" km";
+  return Math.round(km)+" km";
 }
 
-function renderVehicles(vehicles)
-{
-  var grid = document.getElementById("grid");
+function filterLocations() {
+  var q = document.getElementById("locSearch").value.toLowerCase().trim();
+  var cards = document.querySelectorAll(".loc-card");
+  var visible = 0;
+  cards.forEach(function(card) {
+    var n  = (card.dataset.name || "").toLowerCase();
+    var co = (card.dataset.contractor || "").toLowerCase();
+    var st = (card.dataset.state || "");
+    var mq = !q || n.includes(q) || co.includes(q) || st.toLowerCase().includes(q);
+    var ms = activeState === "ALL" || st === activeState;
+    if(mq && ms) { card.classList.remove("hidden"); visible++; }
+    else          { card.classList.add("hidden"); }
+  });
+  document.getElementById("locCount").textContent = visible + " of " + LOADING_LOCATIONS.length + " locations";
+}
+
+var TOP_N = 5;
+
+function renderLocations(vehicles) {
+  var grid = document.getElementById("locGrid");
   grid.innerHTML = "";
-  var transit=0, stopped=0, idle=0;
 
-  vehicles.forEach(function(v)
-  {
-    var status = getStatus(v.spd, v.ign);
-    var cardClass = status==="IN TRANSIT" ? "card-transit" : status==="STOPPED" ? "card-stopped" : "card-idle";
-    var badgeClass = status==="IN TRANSIT" ? "badge-transit" : status==="STOPPED" ? "badge-stopped" : "badge-idle";
-
-    if(status==="IN TRANSIT") transit++;
-    else if(status==="STOPPED") stopped++;
-    else idle++;
+  LOADING_LOCATIONS.forEach(function(loc) {
+    var withDist = vehicles.map(function(v) {
+      return {
+        vno:v.vno,
+        dist:haversine(parseFloat(v.lat), parseFloat(v.lon), loc.lat, loc.lon),
+        status:getStatus(v.spd, v.ign)
+      };
+    }).sort(function(a,b){ return a.dist-b.dist; });
 
     var card = document.createElement("div");
-    card.className = "card " + cardClass;
-    card.innerHTML =
-      "<div class='vno'>🚛 " + v.vno + "</div>" +
-      "<span class='badge " + badgeClass + "'>" + status + "</span>" +
-      "<div class='row'><span class='lbl'>Speed</span><span class='val'>" + v.spd + " km/h</span></div>" +
-      "<div class='row'><span class='lbl'>Ignition</span><span class='val'>" + (v.ign==1?"🟢 ON":"🔴 OFF") + "</span></div>" +
-      "<div class='row'><span class='lbl'>Course</span><span class='val'>" + v.crs + "°</span></div>" +
-      "<div class='row'><span class='lbl'>GPS Time</span><span class='val'>" + v.time + "</span></div>" +
-      "<div class='coords'>📍 " + v.lat + ", " + v.lon + "</div>" +
-      "<button class='mapbtn' onclick='openMap(" + v.lat + "," + v.lon + ",\"" + v.vno + "\")'>🗺️ View on Map</button>";
+    card.className = "loc-card";
+    card.dataset.name = loc.name;
+    card.dataset.contractor = loc.contractor;
+    card.dataset.state = loc.state;
+
+    // Capacity tags (max 4 shown)
+    var caps = loc.capacity ? loc.capacity.split(",").slice(0,4).map(function(c){
+      return "<span class='tag-cap'>"+c.trim()+"</span>";
+    }).join("") : "";
+
+    var statePill = loc.state ? "<span class='tag-state'>"+loc.state+"</span>" : "";
+
+    var head = "<div class='loc-head'>" +
+      "<div class='loc-top'>" +
+        "<div class='loc-name'>"+loc.name+"</div>" +
+        "<span class='loc-type-badge'>"+loc.type+"</span>" +
+      "</div>" +
+      (loc.contractor ? "<div class='loc-contractor'>"+loc.contractor+"</div>" : "") +
+      "<div class='loc-meta'>"+statePill+caps+"</div>" +
+      "<div class='loc-coords'>"+loc.lat.toFixed(5)+"° N, "+loc.lon.toFixed(5)+"° E</div>" +
+    "</div>";
+
+    // Vehicle rows
+    var rows = "";
+    if(withDist.length === 0) {
+      rows = "<div class='no-veh'>No vehicle data available</div>";
+    } else {
+      withDist.forEach(function(v, i) {
+        var sc = v.status==="TRANSIT" ? "s-transit" : v.status==="STOPPED" ? "s-stopped" : "s-idle";
+        var extra = i >= TOP_N ? " hidden-veh" : "";
+        rows += "<div class='veh-row"+extra+"'>" +
+          "<span class='veh-vno'>"+v.vno+"</span>" +
+          "<div class='veh-right'>" +
+            "<span class='veh-st "+sc+"'>"+v.status+"</span>" +
+            "<span class='veh-dist'>"+fmtDist(v.dist)+"</span>" +
+          "</div>" +
+        "</div>";
+      });
+    }
+
+    var showMoreBtn = withDist.length > TOP_N
+      ? "<button class='show-more-btn' onclick='toggleMore(this)'>▼ Show "+(withDist.length-TOP_N)+" more</button>"
+      : "";
+
+    card.innerHTML = head +
+      "<div class='loc-vehicles'>" +
+        "<div class='loc-veh-hdr'>Nearby vehicles by distance</div>" +
+        rows + showMoreBtn +
+      "</div>";
 
     grid.appendChild(card);
   });
 
-  document.getElementById("cTotal").innerText = vehicles.length;
+  document.getElementById("locCount").textContent = LOADING_LOCATIONS.length + " of " + LOADING_LOCATIONS.length + " locations";
+  filterLocations();
+}
+
+function toggleMore(btn) {
+  var card = btn.closest(".loc-card");
+  var hidden = card.querySelectorAll(".hidden-veh");
+  var expanded = btn.dataset.expanded === "1";
+  hidden.forEach(function(el){ el.style.display = expanded ? "none" : "flex"; });
+  btn.dataset.expanded = expanded ? "0" : "1";
+  btn.textContent = expanded ? ("▼ Show "+hidden.length+" more") : "▲ Show less";
+}
+
+function renderVehicles(vehicles) {
+  var grid = document.getElementById("vehGrid");
+  grid.innerHTML = "";
+  var transit=0, stopped=0, idle=0;
+
+  vehicles.forEach(function(v) {
+    var st  = getStatus(v.spd, v.ign);
+    var cls = st==="TRANSIT" ? "transit" : st==="STOPPED" ? "stopped" : "idle";
+    var bcls= st==="TRANSIT" ? "b-transit" : st==="STOPPED" ? "b-stopped" : "b-idle";
+    if(st==="TRANSIT") transit++;
+    else if(st==="STOPPED") stopped++;
+    else idle++;
+
+    var card = document.createElement("div");
+    card.className = "v-card "+cls;
+    card.innerHTML =
+      "<div class='v-vno'>🚛 "+v.vno+"</div>" +
+      "<span class='v-badge "+bcls+"'>"+st+"</span>" +
+      "<div class='v-row'><span class='v-lbl'>Speed</span><span class='v-val'>"+v.spd+" km/h</span></div>" +
+      "<div class='v-row'><span class='v-lbl'>Ignition</span><span class='v-val'>"+(v.ign==1?"ON":"OFF")+"</span></div>" +
+      "<div class='v-row'><span class='v-lbl'>Course</span><span class='v-val'>"+v.crs+"°</span></div>" +
+      "<div class='v-row'><span class='v-lbl'>GPS Time</span><span class='v-val'>"+v.time+"</span></div>" +
+      "<div class='v-coords'>"+parseFloat(v.lat).toFixed(5)+"° N &nbsp;|&nbsp; "+parseFloat(v.lon).toFixed(5)+"° E</div>" +
+      "<button class='mapbtn' onclick='openMap("+v.lat+","+v.lon+",\""+v.vno+"\")'>📍 View on Map</button>";
+    grid.appendChild(card);
+  });
+
+  document.getElementById("cTotal").innerText   = vehicles.length;
   document.getElementById("cTransit").innerText = transit;
   document.getElementById("cStopped").innerText = stopped;
-  document.getElementById("cIdle").innerText = idle;
-  document.getElementById("lastUpdate").innerText = "Live • " + new Date().toLocaleTimeString();
+  document.getElementById("cIdle").innerText    = idle;
+  document.getElementById("lastUpdate").innerText = "Live · "+new Date().toLocaleTimeString();
 }
 
-function openMap(lat, lon, vno)
-{
-  document.getElementById("modal-title").innerText = "📍 " + vno + " — Live Location";
-  document.getElementById("map-iframe").src = "https://maps.google.com/maps?q=" + lat + "," + lon + "&z=15&output=embed";
-  document.getElementById("map-modal").classList.add("show");
+function fetchVehicles() {
+  fetch(API_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      if(data.success && data.results && data.results.length > 0) {
+        renderVehicles(data.results);
+        renderLocations(data.results);
+      } else {
+        document.getElementById("vehGrid").innerHTML = '<div class="error">No data returned: '+JSON.stringify(data)+'</div>';
+      }
+    })
+    .catch(function(err) {
+      document.getElementById("vehGrid").innerHTML = '<div class="error">Connection error: '+err.message+'</div>';
+    });
 }
 
-function closeMap()
-{
-  document.getElementById("map-modal").classList.remove("show");
+function openMap(lat,lon,vno) {
+  document.getElementById("modal-title").innerText = "📍 "+vno+" — Live Location";
+  document.getElementById("map-iframe").src = "https://maps.google.com/maps?q="+lat+","+lon+"&z=15&output=embed";
+  document.getElementById("mapModal").classList.add("show");
+}
+function closeMap() {
+  document.getElementById("mapModal").classList.remove("show");
   document.getElementById("map-iframe").src = "";
 }
 
 fetchVehicles();
-setInterval(fetchVehicles, 60000); // refresh every 1 minute
+setInterval(fetchVehicles, 60000);
 </script>
-
 </body>
 </html>
