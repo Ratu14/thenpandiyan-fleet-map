@@ -30,11 +30,9 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
 
-  /* ── Header ───────────────────────────────── */
+  /* ── Header ── */
   .header {
-    background:var(--header-bg);
-    padding:0 28px;
-    height:52px;
+    background:var(--header-bg); padding:0 28px; height:52px;
     display:flex; align-items:center; justify-content:space-between;
   }
   .header-left { display:flex; align-items:center; gap:12px; }
@@ -61,16 +59,11 @@
     letter-spacing:0.1em; text-transform:uppercase;
   }
 
-  /* ── Stats bar ─────────────────────────────── */
-  .stats {
-    background:var(--surface);
-    border-bottom:1px solid var(--border);
-    display:flex;
-  }
+  /* ── Stats bar ── */
+  .stats { background:var(--surface); border-bottom:1px solid var(--border); display:flex; }
   .stat {
     flex:1; padding:14px 20px; text-align:center;
     border-right:1px solid var(--border);
-    position:relative;
   }
   .stat:last-child { border-right:none; }
   .stat-val { font-size:26px; font-weight:700; line-height:1; font-family:'DM Mono',monospace; }
@@ -80,22 +73,17 @@
   .c-stopped { color:var(--stopped); }
   .c-idle    { color:var(--idle); }
 
-  /* ── Section header ────────────────────────── */
+  /* ── Section header ── */
   .section-wrap { padding:24px 28px 0; }
-  .section-hdr {
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:14px;
-  }
+  .section-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
   .section-title {
     font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
     color:var(--green); display:flex; align-items:center; gap:8px;
   }
-  .section-title::before {
-    content:""; display:inline-block; width:28px; height:2px; background:var(--green); border-radius:2px;
-  }
+  .section-title::before { content:""; display:inline-block; width:28px; height:2px; background:var(--green); border-radius:2px; }
   .section-count { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
 
-  /* ── Toolbar ────────────────────────────────── */
+  /* ── Toolbar ── */
   .toolbar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
   .search-wrap { flex:1; min-width:220px; position:relative; }
   .search-wrap input {
@@ -116,10 +104,9 @@
   .pill:hover { border-color:var(--green); color:var(--green); }
   .pill.active { background:var(--green); color:white; border-color:var(--green); }
 
-  /* ── Location cards grid ───────────────────── */
+  /* ── Location cards ── */
   .loc-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(290px,1fr));
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(290px,1fr));
     gap:12px; padding-bottom:28px;
   }
   .loc-card {
@@ -127,30 +114,45 @@
     border-radius:8px; overflow:hidden; transition:box-shadow .2s, border-color .2s;
   }
   .loc-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.07); border-color:var(--border2); }
+  .loc-card.hidden { display:none; }
+
+  /* Card head */
   .loc-head { padding:12px 14px 10px; border-bottom:1px solid var(--border); }
-  .loc-top  { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+  .loc-top  { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:6px; }
   .loc-name { font-size:13px; font-weight:600; color:var(--text); line-height:1.3; }
+
+  /* Type badge — Load / Unload / Both */
   .loc-type-badge {
     font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px;
     letter-spacing:0.08em; text-transform:uppercase; flex-shrink:0;
     margin-top:2px; font-family:'DM Mono',monospace;
-    background:var(--green-lt); color:var(--green); border:1px solid #b7dfc6;
   }
-  .loc-contractor { font-size:11px; color:var(--muted); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .loc-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; align-items:center; }
+  .type-load   { background:var(--green-lt); color:var(--green); border:1px solid #b7dfc6; }
+  .type-unload { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
+  .type-both   { background:#f5f3ff; color:#7c3aed; border:1px solid #ddd6fe; }
+
+  /* Info rows below the name */
+  .loc-info-row {
+    display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;
+  }
   .tag-state {
     font-size:10px; padding:2px 8px; border-radius:3px;
     background:#eef2ee; color:var(--green); font-weight:600;
     border:1px solid #c8dccb;
+  }
+  .tag-ktt {
+    font-size:10px; padding:2px 8px; border-radius:3px;
+    background:#f8f4ff; color:#7c3aed; font-weight:600;
+    border:1px solid #e0d5f5; font-family:'DM Mono',monospace;
   }
   .tag-cap {
     font-size:10px; padding:2px 7px; border-radius:3px;
     background:var(--bg); color:var(--text2);
     border:1px solid var(--border2); font-family:'DM Mono',monospace;
   }
-  .loc-coords { font-size:10px; color:var(--muted); margin-top:6px; font-family:'DM Mono',monospace; }
+  .loc-coords { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:4px; }
 
-  /* vehicles inside loc card */
+  /* Vehicles inside loc card */
   .loc-vehicles { padding:8px 14px 10px; }
   .loc-veh-hdr { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; padding-bottom:6px; font-weight:500; }
   .veh-row {
@@ -171,16 +173,14 @@
   .no-veh { font-size:11px; color:var(--muted); padding:6px 0; font-style:italic; }
   .show-more-btn {
     font-size:11px; color:var(--green); cursor:pointer; padding:4px 0 0;
-    background:none; border:none; font-family:'Inter',sans-serif;
-    font-weight:500; letter-spacing:0.01em;
+    background:none; border:none; font-family:'Inter',sans-serif; font-weight:500;
   }
   .hidden-veh { display:none; }
-  .loc-card.hidden { display:none; }
 
-  /* ── Divider ───────────────────────────────── */
+  /* ── Divider ── */
   .page-divider { border:none; border-top:1px solid var(--border); margin:0 28px; }
 
-  /* ── Vehicle cards ─────────────────────────── */
+  /* ── Vehicle cards ── */
   .veh-grid {
     display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
     gap:12px; padding-bottom:32px;
@@ -216,7 +216,7 @@
   }
   .mapbtn:hover { background:var(--green); color:white; border-color:var(--green); }
 
-  /* ── Map modal ─────────────────────────────── */
+  /* ── Map modal ── */
   .map-overlay {
     display:none; position:fixed; top:0; left:0; width:100%; height:100%;
     background:rgba(0,0,0,0.55); z-index:9999; justify-content:center; align-items:center;
@@ -235,7 +235,7 @@
   .close-btn:hover { color:var(--idle); }
   #map-iframe { width:100%; height:calc(100% - 44px); border:none; }
 
-  /* ── Loading / Error ───────────────────────── */
+  /* ── Loading / Error ── */
   .loading { text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; letter-spacing:0.05em; }
   .error   { text-align:center; padding:40px 20px; color:var(--idle); font-size:13px; }
 </style>
@@ -269,13 +269,13 @@
 <!-- Loading Locations -->
 <div class="section-wrap">
   <div class="section-hdr">
-    <div class="section-title">Loading Locations — Nearest Vehicles</div>
+    <div class="section-title">Locations — Nearest Vehicles</div>
     <div class="section-count" id="locCount"></div>
   </div>
   <div class="toolbar">
     <div class="search-wrap">
       <span class="s-icon">🔍</span>
-      <input type="text" id="locSearch" placeholder="Search by location, contractor or state…" oninput="filterLocations()">
+      <input type="text" id="locSearch" placeholder="Search location, state, KTT zone code…" oninput="filterLocations()">
     </div>
     <div class="filter-pills" id="statePills"></div>
   </div>
@@ -311,35 +311,26 @@
 const API_URL = "https://thenpandiyan-fleet-proxy.ratulpal1114.workers.dev/";
 
 const LOADING_LOCATIONS = [
-  { name:"Jaigad - Ratnagiri",                  lat:17.296447, lon:73.212658, contractor:"",                                           state:"Maharashtra",       capacity:"",                              type:"Load" },
-  { name:"AGS Mumbai",                           lat:18.998543, lon:72.829738, contractor:"ASHOK LEYLAND LIMITED",                      state:"Maharashtra",       capacity:"18MT, 20.55MT, 21MT",           type:"Load" },
-  { name:"Pune - BPCL",                         lat:18.459001, lon:74.091644, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Maharashtra",       capacity:"18MT, 20.55MT, 21MT",           type:"Load" },
-  { name:"BPCL - Palakkad",                     lat:10.783561, lon:76.781168, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Kerala",            capacity:"18MT, 20.55MT",                 type:"Load" },
-  { name:"Cochin - KL",                         lat:9.976313,  lon:76.384636, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Kerala",            capacity:"18MT, 20.55MT",                 type:"Load" },
-  { name:"Vizak - AP",                          lat:17.712658, lon:83.249949, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Andhra Pradesh",    capacity:"18MT",                          type:"Load" },
-  { name:"Uran - Mumbai",                       lat:18.874363, lon:72.957363, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Maharashtra",       capacity:"18MT",                          type:"Load" },
-  { name:"Mangalore - HPCL",                    lat:12.979143, lon:74.836006, contractor:"Bharat Petroleum Corporation Ltd (BPCL)",    state:"Karnataka",         capacity:"18MT",                          type:"Load" },
-  { name:"SHV",                                 lat:10.939962, lon:77.067849, contractor:"Covai LPG",                                  state:"Tamil Nadu",        capacity:"16MT, 18MT, 20.55MT, 21MT",     type:"Load" },
-  { name:"Loni - HPCL",                        lat:18.490726, lon:74.012182, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Jammu and Kashmir", capacity:"15.5MT",                        type:"Load" },
-  { name:"Yediyur - KA HPCL",                  lat:12.978687, lon:76.884497, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Karnataka",         capacity:"18MT",                          type:"Load" },
-  { name:"Bahadurgarh",                         lat:28.733326, lon:76.856017, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Haryana",           capacity:"12MT, 16MT",                    type:"Load" },
-  { name:"Bhatinda - Punjab",                   lat:30.164380, lon:74.981428, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Punjab",            capacity:"15.5MT",                        type:"Load" },
-  { name:"Bahadurgarh - HPCL",                 lat:28.734938, lon:76.856792, contractor:"Hindustan Petroleum Corporation Ltd (HPCL)", state:"Haryana",           capacity:"12MT, 15.5MT, 16MT",            type:"Load" },
-  { name:"IOT - Puduchatram",                   lat:11.390985, lon:78.177815, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Tamil Nadu",        capacity:"1MT",                           type:"Load" },
-  { name:"IOCL (KASO) - Yediyur",              lat:12.989714, lon:77.829266, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Karnataka",         capacity:"18MT",                          type:"Load" },
-  { name:"IOCL (KLSO) - MRPL HPCL",            lat:12.991312, lon:74.837955, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Kerala",            capacity:"18MT",                          type:"Load" },
-  { name:"Paradeep",                            lat:20.282573, lon:86.628873, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Odisha",            capacity:"16MT, 18MT",                    type:"Load" },
-  { name:"AGS Mangalore",                       lat:12.914778, lon:74.815592, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Karnataka",         capacity:"18MT, 21MT",                    type:"Load" },
-  { name:"CPCL - Chennai",                      lat:13.181839, lon:80.261925, contractor:"INDIAN OIL CORPORATION LTD (IOCL)",          state:"Tamil Nadu",        capacity:"15.5MT, 16MT, 18MT, 20.55MT, 21MT", type:"Load" },
-  { name:"IPPL - Chennai",                      lat:13.252002, lon:80.302308, contractor:"Indianoil Petronas (P) Ltd (IPPL)",          state:"Tamil Nadu",        capacity:"",                              type:"Load" },
-  { name:"IPPL - Haldia",                       lat:22.078166, lon:88.109810, contractor:"Indianoil Petronas (P) Ltd (IPPL)",          state:"West Bengal",       capacity:"",                              type:"Load" },
-  { name:"Vinathi Organics Limited",            lat:19.060820, lon:72.868269, contractor:"KOTHARI PETROCHEMICALS LTD.",                state:"Maharashtra",       capacity:"18MT",                          type:"Load" },
-  { name:"Vadodara - Reliance",                 lat:22.372455, lon:73.106430, contractor:"KOTHARI PETROCHEMICALS LTD.",                state:"Gujarat",           capacity:"18MT, 21MT",                    type:"Load" },
-  { name:"AGS Bangalore - Kwality",             lat:12.978723, lon:77.551139, contractor:"Kwality Gas Bottlers (P) Ltd.",              state:"Karnataka",         capacity:"18MT, 21MT",                    type:"Load" },
-  { name:"TOTAL Bengaluru",                     lat:13.100327, lon:77.358752, contractor:"SIPANI ENERGY LIMITED",                      state:"Karnataka",         capacity:"12MT",                          type:"Load" },
-  { name:"CETEX",                               lat:13.082616, lon:80.270724, contractor:"Sree LPG (P) Ltd.",                          state:"Tamil Nadu",        capacity:"18MT, 20.55MT",                 type:"Load" },
-  { name:"Super Gas - Chennai",                 lat:12.928515, lon:79.919108, contractor:"Super Gas - Chennai",                        state:"Tamil Nadu",        capacity:"18MT, 21MT",                    type:"Load" },
-  { name:"PETREGAZ - Krishnapatnam, Nellore",  lat:14.275208, lon:80.136919, contractor:"Thenpandiyan LPG Import Terminal (TLIT)",    state:"Andhra Pradesh",    capacity:"7MT, 12MT, 15.5MT, 18MT, 21MT",type:"Load" }
+  { name:"Mangalore - HPCL",                      lat:12.976278, lon:74.833787, state:"Karnataka",     capacity:"18MT",                                    type:"Load", ktt:"TPT063" },
+  { name:"Bahadurgarh",                            lat:28.734938, lon:76.856792, state:"Haryana",       capacity:"12MT, 16MT",                              type:"Load", ktt:"TPT062" },
+  { name:"Bhatinda - Punjab",                      lat:29.933897, lon:74.980591, state:"Punjab",        capacity:"15.5MT",                                  type:"Load", ktt:"TPT010" },
+  { name:"Paradeep",                               lat:20.288786, lon:86.627457, state:"Odisha",        capacity:"16MT, 18MT",                              type:"Load", ktt:"TPT096" },
+  { name:"AGS Mangalore",                          lat:12.914930, lon:74.815147, state:"Karnataka",     capacity:"18MT, 21MT",                              type:"Load", ktt:"TPT151" },
+  { name:"CPCL - Chennai",                         lat:13.183284, lon:80.267143, state:"Tamil Nadu",    capacity:"15.5MT, 16MT, 18MT, 20.55MT, 21MT",       type:"Load", ktt:"TPT025" },
+  { name:"IPPL - Chennai",                         lat:13.252232, lon:80.300095, state:"Tamil Nadu",    capacity:"",                                        type:"Load", ktt:"TPT068" },
+  { name:"IPPL - Haldia",                          lat:22.081457, lon:88.109360, state:"West Bengal",   capacity:"",                                        type:"Load", ktt:"TPT056" },
+  { name:"Vinathi Organics Limited",               lat:17.594828, lon:73.489067, state:"Maharashtra",   capacity:"18MT",                                    type:"Load", ktt:"TPT148" },
+  { name:"Vadodara - Reliance",                    lat:22.385229, lon:73.119904, state:"Gujarat",       capacity:"18MT, 21MT",                              type:"Load", ktt:"TPT104" },
+  { name:"Kothari Petrochemicals - Manali",        lat:13.157072, lon:80.273822, state:"Tamil Nadu",    capacity:"18MT, 20.55MT, 21MT",                     type:"Both", ktt:"TPT082" },
+  { name:"Tirutani (Vanganoor) - Meena",           lat:13.179621, lon:79.456275, state:"Tamil Nadu",    capacity:"16MT, 18MT, 21MT",                        type:"Both", ktt:"TPT089" },
+  { name:"Meena Covai",                            lat:10.869603, lon:76.902797, state:"Tamil Nadu",    capacity:"7MT, 12MT, 15.5MT, 18MT, 20.55MT, 21MT", type:"Both", ktt:"TPT086" },
+  { name:"Namakkal - Meena",                       lat:11.293393, lon:78.170366, state:"Tamil Nadu",    capacity:"7MT, 12MT, 15.5MT, 16MT, 18MT, 20.55MT, 21MT", type:"Both", ktt:"TPT087" },
+  { name:"Meena Cheyyar",                          lat:12.709895, lon:79.632626, state:"Tamil Nadu",    capacity:"7MT, 18MT, 20.55MT, 21MT",                type:"Both", ktt:"TPT088" },
+  { name:"TOTAL Bengaluru",                        lat:13.100626, lon:77.359459, state:"Karnataka",     capacity:"12MT",                                    type:"Load", ktt:"TPT139" },
+  { name:"Bangalore - Sree Surya Petroleum",       lat:9.632178,  lon:76.776287, state:"Karnataka",     capacity:"18MT, 21MT",                              type:"Both", ktt:"TPT115" },
+  { name:"Super Gas - Chennai",                    lat:12.910364, lon:79.931253, state:"Tamil Nadu",    capacity:"18MT, 21MT",                              type:"Load", ktt:"TPT124" },
+  { name:"PETREGAZ - Krishnapatnam, Nellore",      lat:14.274434, lon:80.137527, state:"Andhra Pradesh",capacity:"7MT, 12MT, 15.5MT, 18MT, 21MT",           type:"Load", ktt:"TPT097" },
+  { name:"Jaigad - Ratnagiri",                     lat:17.299386, lon:73.201151, state:"Maharashtra",   capacity:"",                                        type:"Load", ktt:"TPT070" },
 ];
 
 // Unique sorted states
@@ -351,7 +342,7 @@ allStates.sort();
 
 var activeState = "ALL";
 
-// Build pills
+// Build state pills
 (function() {
   var c = document.getElementById("statePills");
   function makePill(label, value) {
@@ -400,11 +391,11 @@ function filterLocations() {
   var cards = document.querySelectorAll(".loc-card");
   var visible = 0;
   cards.forEach(function(card) {
-    var n  = (card.dataset.name || "").toLowerCase();
-    var co = (card.dataset.contractor || "").toLowerCase();
-    var st = (card.dataset.state || "");
-    var mq = !q || n.includes(q) || co.includes(q) || st.toLowerCase().includes(q);
-    var ms = activeState === "ALL" || st === activeState;
+    var n   = (card.dataset.name  || "").toLowerCase();
+    var st  = (card.dataset.state || "");
+    var ktt = (card.dataset.ktt   || "").toLowerCase();
+    var mq  = !q || n.includes(q) || st.toLowerCase().includes(q) || ktt.includes(q);
+    var ms  = activeState === "ALL" || st === activeState;
     if(mq && ms) { card.classList.remove("hidden"); visible++; }
     else          { card.classList.add("hidden"); }
   });
@@ -428,26 +419,33 @@ function renderLocations(vehicles) {
 
     var card = document.createElement("div");
     card.className = "loc-card";
-    card.dataset.name = loc.name;
-    card.dataset.contractor = loc.contractor;
+    card.dataset.name  = loc.name;
     card.dataset.state = loc.state;
+    card.dataset.ktt   = loc.ktt;
 
-    // Capacity tags (max 4 shown)
-    var caps = loc.capacity ? loc.capacity.split(",").slice(0,4).map(function(c){
-      return "<span class='tag-cap'>"+c.trim()+"</span>";
-    }).join("") : "";
+    // Type badge class
+    var typeCls = loc.type === "Both" ? "type-both" : loc.type === "Unload" ? "type-unload" : "type-load";
 
-    var statePill = loc.state ? "<span class='tag-state'>"+loc.state+"</span>" : "";
+    // Capacity tags (max 4)
+    var capTags = loc.capacity
+      ? loc.capacity.split(",").slice(0,4).map(function(c){
+          return "<span class='tag-cap'>"+c.trim()+"</span>";
+        }).join("")
+      : "";
 
-    var head = "<div class='loc-head'>" +
-      "<div class='loc-top'>" +
-        "<div class='loc-name'>"+loc.name+"</div>" +
-        "<span class='loc-type-badge'>"+loc.type+"</span>" +
-      "</div>" +
-      (loc.contractor ? "<div class='loc-contractor'>"+loc.contractor+"</div>" : "") +
-      "<div class='loc-meta'>"+statePill+caps+"</div>" +
-      "<div class='loc-coords'>"+loc.lat.toFixed(5)+"° N, "+loc.lon.toFixed(5)+"° E</div>" +
-    "</div>";
+    var head =
+      "<div class='loc-head'>" +
+        "<div class='loc-top'>" +
+          "<div class='loc-name'>"+loc.name+"</div>" +
+          "<span class='loc-type-badge "+typeCls+"'>"+loc.type+"</span>" +
+        "</div>" +
+        "<div class='loc-info-row'>" +
+          "<span class='tag-state'>"+loc.state+"</span>" +
+          "<span class='tag-ktt'>"+loc.ktt+"</span>" +
+        "</div>" +
+        (capTags ? "<div class='loc-info-row' style='margin-top:2px'>"+capTags+"</div>" : "") +
+        "<div class='loc-coords'>"+loc.lat.toFixed(5)+"° N, "+loc.lon.toFixed(5)+"° E</div>" +
+      "</div>";
 
     // Vehicle rows
     var rows = "";
@@ -455,7 +453,7 @@ function renderLocations(vehicles) {
       rows = "<div class='no-veh'>No vehicle data available</div>";
     } else {
       withDist.forEach(function(v, i) {
-        var sc = v.status==="TRANSIT" ? "s-transit" : v.status==="STOPPED" ? "s-stopped" : "s-idle";
+        var sc    = v.status==="TRANSIT" ? "s-transit" : v.status==="STOPPED" ? "s-stopped" : "s-idle";
         var extra = i >= TOP_N ? " hidden-veh" : "";
         rows += "<div class='veh-row"+extra+"'>" +
           "<span class='veh-vno'>"+v.vno+"</span>" +
@@ -499,9 +497,9 @@ function renderVehicles(vehicles) {
   var transit=0, stopped=0, idle=0;
 
   vehicles.forEach(function(v) {
-    var st  = getStatus(v.spd, v.ign);
-    var cls = st==="TRANSIT" ? "transit" : st==="STOPPED" ? "stopped" : "idle";
-    var bcls= st==="TRANSIT" ? "b-transit" : st==="STOPPED" ? "b-stopped" : "b-idle";
+    var st   = getStatus(v.spd, v.ign);
+    var cls  = st==="TRANSIT" ? "transit" : st==="STOPPED" ? "stopped" : "idle";
+    var bcls = st==="TRANSIT" ? "b-transit" : st==="STOPPED" ? "b-stopped" : "b-idle";
     if(st==="TRANSIT") transit++;
     else if(st==="STOPPED") stopped++;
     else idle++;
