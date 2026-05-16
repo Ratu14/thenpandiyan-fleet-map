@@ -30,41 +30,22 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
 
-  /* ── Header ── */
-  .header {
-    background:var(--header-bg); padding:0 28px; height:52px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
+  .header { background:var(--header-bg); padding:0 28px; height:52px; display:flex; align-items:center; justify-content:space-between; }
   .header-left { display:flex; align-items:center; gap:12px; }
-  .logo-box {
-    width:34px; height:34px; background:var(--green); border-radius:6px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:14px; font-weight:800; color:white; font-family:'DM Mono',monospace;
-    letter-spacing:-0.03em; flex-shrink:0;
-  }
+  .logo-box { width:34px; height:34px; background:var(--green); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:white; font-family:'DM Mono',monospace; letter-spacing:-0.03em; flex-shrink:0; }
   .brand-name { font-size:15px; font-weight:600; color:#ffffff; letter-spacing:0.01em; }
   .brand-sub  { font-size:11px; color:var(--green-mid); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
   .header-right { display:flex; align-items:center; gap:12px; }
   #lastUpdate { font-size:11px; color:#6b7a6e; font-family:'DM Mono',monospace; }
-  .refresh-btn {
-    background:var(--green); color:white; border:none;
-    padding:6px 16px; border-radius:5px; cursor:pointer;
-    font-size:12px; font-family:'Inter',sans-serif; font-weight:500;
-    letter-spacing:0.03em; transition:background .2s;
-  }
+  .nav-pill { font-size:11px; font-weight:500; padding:5px 13px; border-radius:20px; cursor:pointer; color:#8a9e90; border:1px solid transparent; transition:all .15s; text-decoration:none; letter-spacing:0.03em; }
+  .nav-pill:hover { color:white; }
+  .nav-pill.active { background:var(--green); color:white; }
+  .refresh-btn { background:var(--green); color:white; border:none; padding:6px 16px; border-radius:5px; cursor:pointer; font-size:12px; font-family:'Inter',sans-serif; font-weight:500; letter-spacing:0.03em; transition:background .2s; }
   .refresh-btn:hover { background:var(--green-acc); }
-  .fleet-tag {
-    background:transparent; border:1px solid var(--green-mid); color:var(--green-mid);
-    font-size:11px; font-weight:600; padding:4px 12px; border-radius:4px;
-    letter-spacing:0.1em; text-transform:uppercase;
-  }
+  .fleet-tag { background:transparent; border:1px solid var(--green-mid); color:var(--green-mid); font-size:11px; font-weight:600; padding:4px 12px; border-radius:4px; letter-spacing:0.1em; text-transform:uppercase; }
 
-  /* ── Stats bar ── */
   .stats { background:var(--surface); border-bottom:1px solid var(--border); display:flex; }
-  .stat {
-    flex:1; padding:14px 20px; text-align:center;
-    border-right:1px solid var(--border);
-  }
+  .stat { flex:1; padding:14px 20px; text-align:center; border-right:1px solid var(--border); }
   .stat:last-child { border-right:none; }
   .stat-val { font-size:26px; font-weight:700; line-height:1; font-family:'DM Mono',monospace; }
   .stat-lbl { font-size:10px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; font-weight:500; }
@@ -73,133 +54,63 @@
   .c-stopped { color:var(--stopped); }
   .c-idle    { color:var(--idle); }
 
-  /* ── Section header ── */
   .section-wrap { padding:24px 28px 0; }
   .section-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-  .section-title {
-    font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
-    color:var(--green); display:flex; align-items:center; gap:8px;
-  }
+  .section-title { font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--green); display:flex; align-items:center; gap:8px; }
   .section-title::before { content:""; display:inline-block; width:28px; height:2px; background:var(--green); border-radius:2px; }
   .section-count { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
 
-  /* ── Toolbar ── */
   .toolbar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
   .search-wrap { flex:1; min-width:220px; position:relative; }
-  .search-wrap input {
-    width:100%; background:var(--surface); border:1px solid var(--border2);
-    color:var(--text); padding:8px 12px 8px 34px; border-radius:6px;
-    font-size:13px; outline:none; font-family:'Inter',sans-serif;
-    transition:border-color .2s, box-shadow .2s;
-  }
+  .search-wrap input { width:100%; background:var(--surface); border:1px solid var(--border2); color:var(--text); padding:8px 12px 8px 34px; border-radius:6px; font-size:13px; outline:none; font-family:'Inter',sans-serif; transition:border-color .2s, box-shadow .2s; }
   .search-wrap input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(26,122,63,0.08); }
   .search-wrap .s-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; pointer-events:none; }
   .filter-pills { display:flex; gap:6px; flex-wrap:wrap; }
-  .pill {
-    padding:5px 12px; border-radius:20px; font-size:11px; font-weight:500;
-    cursor:pointer; transition:all .15s; white-space:nowrap;
-    border:1px solid var(--border2); color:var(--text2); background:var(--surface);
-    font-family:'Inter',sans-serif;
-  }
+  .pill { padding:5px 12px; border-radius:20px; font-size:11px; font-weight:500; cursor:pointer; transition:all .15s; white-space:nowrap; border:1px solid var(--border2); color:var(--text2); background:var(--surface); font-family:'Inter',sans-serif; }
   .pill:hover { border-color:var(--green); color:var(--green); }
   .pill.active { background:var(--green); color:white; border-color:var(--green); }
 
-  /* ── Location cards ── */
-  .loc-grid {
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(290px,1fr));
-    gap:12px; padding-bottom:28px;
-  }
-  .loc-card {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:8px; overflow:hidden; transition:box-shadow .2s, border-color .2s;
-  }
+  .loc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(290px,1fr)); gap:12px; padding-bottom:28px; }
+  .loc-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:box-shadow .2s, border-color .2s; }
   .loc-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.07); border-color:var(--border2); }
   .loc-card.hidden { display:none; }
-
-  /* Card head */
   .loc-head { padding:12px 14px 10px; border-bottom:1px solid var(--border); }
   .loc-top  { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:6px; }
   .loc-name { font-size:13px; font-weight:600; color:var(--text); line-height:1.3; }
-
-  /* Type badge — Load / Unload / Both */
-  .loc-type-badge {
-    font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px;
-    letter-spacing:0.08em; text-transform:uppercase; flex-shrink:0;
-    margin-top:2px; font-family:'DM Mono',monospace;
-  }
+  .loc-type-badge { font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px; letter-spacing:0.08em; text-transform:uppercase; flex-shrink:0; margin-top:2px; font-family:'DM Mono',monospace; }
   .type-load   { background:var(--green-lt); color:var(--green); border:1px solid #b7dfc6; }
   .type-unload { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
   .type-both   { background:#f5f3ff; color:#7c3aed; border:1px solid #ddd6fe; }
-
-  /* Info rows below the name */
-  .loc-info-row {
-    display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;
-  }
-  .tag-state {
-    font-size:10px; padding:2px 8px; border-radius:3px;
-    background:#eef2ee; color:var(--green); font-weight:600;
-    border:1px solid #c8dccb;
-  }
-  .tag-ktt {
-    font-size:10px; padding:2px 8px; border-radius:3px;
-    background:#f8f4ff; color:#7c3aed; font-weight:600;
-    border:1px solid #e0d5f5; font-family:'DM Mono',monospace;
-  }
-  .tag-cap {
-    font-size:10px; padding:2px 7px; border-radius:3px;
-    background:var(--bg); color:var(--text2);
-    border:1px solid var(--border2); font-family:'DM Mono',monospace;
-  }
+  .loc-info-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px; }
+  .tag-state { font-size:10px; padding:2px 8px; border-radius:3px; background:#eef2ee; color:var(--green); font-weight:600; border:1px solid #c8dccb; }
+  .tag-ktt { font-size:10px; padding:2px 8px; border-radius:3px; background:#f8f4ff; color:#7c3aed; font-weight:600; border:1px solid #e0d5f5; font-family:'DM Mono',monospace; }
+  .tag-cap { font-size:10px; padding:2px 7px; border-radius:3px; background:var(--bg); color:var(--text2); border:1px solid var(--border2); font-family:'DM Mono',monospace; }
   .loc-coords { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:4px; }
-
-  /* Vehicles inside loc card */
   .loc-vehicles { padding:8px 14px 10px; }
   .loc-veh-hdr { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; padding-bottom:6px; font-weight:500; }
-  .veh-row {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:5px 0; border-bottom:1px solid #f0f4f0;
-  }
+  .veh-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-bottom:1px solid #f0f4f0; }
   .veh-row:last-of-type { border-bottom:none; }
   .veh-vno { font-size:12px; font-weight:600; color:var(--text); font-family:'DM Mono',monospace; }
   .veh-right { display:flex; align-items:center; gap:8px; }
   .veh-dist { font-size:12px; font-weight:700; color:var(--green); font-family:'DM Mono',monospace; }
-  .veh-st {
-    font-size:9px; font-weight:600; padding:2px 6px; border-radius:3px;
-    text-transform:uppercase; letter-spacing:0.05em;
-  }
+  .veh-st { font-size:9px; font-weight:600; padding:2px 6px; border-radius:3px; text-transform:uppercase; letter-spacing:0.05em; }
   .s-transit { background:var(--transit-bg); color:var(--transit); }
   .s-stopped { background:var(--stopped-bg); color:var(--stopped); }
   .s-idle    { background:var(--idle-bg);    color:var(--idle); }
   .no-veh { font-size:11px; color:var(--muted); padding:6px 0; font-style:italic; }
-  .show-more-btn {
-    font-size:11px; color:var(--green); cursor:pointer; padding:4px 0 0;
-    background:none; border:none; font-family:'Inter',sans-serif; font-weight:500;
-  }
+  .show-more-btn { font-size:11px; color:var(--green); cursor:pointer; padding:4px 0 0; background:none; border:none; font-family:'Inter',sans-serif; font-weight:500; }
   .hidden-veh { display:none; }
 
-  /* ── Divider ── */
   .page-divider { border:none; border-top:1px solid var(--border); margin:0 28px; }
 
-  /* ── Vehicle cards ── */
-  .veh-grid {
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
-    gap:12px; padding-bottom:32px;
-  }
-  .v-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:8px;
-    padding:14px 16px; transition:box-shadow .2s, border-color .2s;
-    border-top:3px solid transparent;
-  }
+  .veh-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px; padding-bottom:32px; }
+  .v-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; transition:box-shadow .2s, border-color .2s; border-top:3px solid transparent; }
   .v-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.06); }
   .v-card.transit { border-top-color:var(--transit); }
   .v-card.stopped { border-top-color:var(--stopped); }
   .v-card.idle    { border-top-color:var(--idle); }
   .v-vno { font-size:15px; font-weight:700; color:var(--text); margin-bottom:6px; }
-  .v-badge {
-    display:inline-block; font-size:10px; font-weight:600; padding:3px 9px;
-    border-radius:4px; margin-bottom:10px; letter-spacing:0.05em;
-    font-family:'DM Mono',monospace;
-  }
+  .v-badge { display:inline-block; font-size:10px; font-weight:600; padding:3px 9px; border-radius:4px; margin-bottom:10px; letter-spacing:0.05em; font-family:'DM Mono',monospace; }
   .b-transit { background:var(--transit-bg); color:var(--transit); }
   .b-stopped { background:var(--stopped-bg); color:var(--stopped); }
   .b-idle    { background:var(--idle-bg);    color:var(--idle); }
@@ -208,41 +119,23 @@
   .v-lbl { color:var(--muted); font-weight:400; }
   .v-val { font-weight:600; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; }
   .v-coords { font-size:10px; color:var(--muted); margin-top:8px; font-family:'DM Mono',monospace; }
-  .mapbtn {
-    display:block; margin-top:10px; background:var(--green-lt); color:var(--green);
-    text-align:center; padding:7px; border-radius:5px; cursor:pointer;
-    border:1px solid #b7dfc6; font-size:12px; font-weight:500;
-    font-family:'Inter',sans-serif; width:100%; transition:all .2s;
-  }
+  .mapbtn { display:block; margin-top:10px; background:var(--green-lt); color:var(--green); text-align:center; padding:7px; border-radius:5px; cursor:pointer; border:1px solid #b7dfc6; font-size:12px; font-weight:500; font-family:'Inter',sans-serif; width:100%; transition:all .2s; }
   .mapbtn:hover { background:var(--green); color:white; border-color:var(--green); }
 
-  /* ── Map modal ── */
-  .map-overlay {
-    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.55); z-index:9999; justify-content:center; align-items:center;
-  }
+  .map-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:9999; justify-content:center; align-items:center; }
   .map-overlay.show { display:flex; }
-  .modal-content {
-    background:white; border-radius:10px; overflow:hidden;
-    width:90%; height:80%; box-shadow:0 20px 60px rgba(0,0,0,0.25);
-  }
-  .modal-header {
-    background:var(--header-bg); color:white; padding:10px 18px;
-    display:flex; justify-content:space-between; align-items:center;
-    font-size:14px; font-weight:600;
-  }
+  .modal-content { background:white; border-radius:10px; overflow:hidden; width:90%; height:80%; box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+  .modal-header { background:var(--header-bg); color:white; padding:10px 18px; display:flex; justify-content:space-between; align-items:center; font-size:14px; font-weight:600; }
   .close-btn { background:none; border:none; color:#8a9e90; font-size:22px; cursor:pointer; line-height:1; }
   .close-btn:hover { color:var(--idle); }
   #map-iframe { width:100%; height:calc(100% - 44px); border:none; }
 
-  /* ── Loading / Error ── */
   .loading { text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; letter-spacing:0.05em; }
   .error   { text-align:center; padding:40px 20px; color:var(--idle); font-size:13px; }
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="header-left">
     <div class="logo-box">TT</div>
@@ -253,55 +146,53 @@
   </div>
   <div class="header-right">
     <span id="lastUpdate"></span>
-    <button class="refresh-btn" onclick="fetchVehicles()">↻ Refresh</button>
+    <a href="index.html" class="nav-pill active">Fleet Dashboard</a>
+    <a href="tat.html" class="nav-pill">TAT Analytics</a>
+    <button class="refresh-btn" onclick="fetchVehicles()">&#8635; Refresh</button>
     <span class="fleet-tag">LPG Bulk Transport</span>
   </div>
 </div>
 
-<!-- Stats -->
 <div class="stats">
-  <div class="stat"><div class="stat-val c-total"   id="cTotal">—</div><div class="stat-lbl">Total Vehicles</div></div>
-  <div class="stat"><div class="stat-val c-transit" id="cTransit">—</div><div class="stat-lbl">In Transit</div></div>
-  <div class="stat"><div class="stat-val c-stopped" id="cStopped">—</div><div class="stat-lbl">Stopped</div></div>
-  <div class="stat"><div class="stat-val c-idle"    id="cIdle">—</div><div class="stat-lbl">Idle</div></div>
+  <div class="stat"><div class="stat-val c-total"   id="cTotal">&#8212;</div><div class="stat-lbl">Total Vehicles</div></div>
+  <div class="stat"><div class="stat-val c-transit" id="cTransit">&#8212;</div><div class="stat-lbl">In Transit</div></div>
+  <div class="stat"><div class="stat-val c-stopped" id="cStopped">&#8212;</div><div class="stat-lbl">Stopped</div></div>
+  <div class="stat"><div class="stat-val c-idle"    id="cIdle">&#8212;</div><div class="stat-lbl">Idle</div></div>
 </div>
 
-<!-- Loading Locations -->
 <div class="section-wrap">
   <div class="section-hdr">
-    <div class="section-title">Locations — Nearest Vehicles</div>
+    <div class="section-title">Locations &#8212; Nearest Vehicles</div>
     <div class="section-count" id="locCount"></div>
   </div>
   <div class="toolbar">
     <div class="search-wrap">
-      <span class="s-icon">🔍</span>
-      <input type="text" id="locSearch" placeholder="Search location, state, KTT zone code…" oninput="filterLocations()">
+      <span class="s-icon">&#128269;</span>
+      <input type="text" id="locSearch" placeholder="Search location, state, KTT zone code&#8230;" oninput="filterLocations()">
     </div>
     <div class="filter-pills" id="statePills"></div>
   </div>
   <div class="loc-grid" id="locGrid">
-    <div class="loading">⏳ Fetching vehicle data…</div>
+    <div class="loading">&#9203; Fetching vehicle data&#8230;</div>
   </div>
 </div>
 
 <hr class="page-divider">
 
-<!-- All Vehicles -->
 <div class="section-wrap" style="padding-top:24px">
   <div class="section-hdr">
-    <div class="section-title">All Vehicles — Live Status</div>
+    <div class="section-title">All Vehicles &#8212; Live Status</div>
   </div>
   <div class="veh-grid" id="vehGrid">
-    <div class="loading">⏳ Loading…</div>
+    <div class="loading">&#9203; Loading&#8230;</div>
   </div>
 </div>
 
-<!-- Map Modal -->
 <div class="map-overlay" id="mapModal">
   <div class="modal-content">
     <div class="modal-header">
       <span id="modal-title">Vehicle Location</span>
-      <button class="close-btn" onclick="closeMap()">✕</button>
+      <button class="close-btn" onclick="closeMap()">&#10005;</button>
     </div>
     <iframe id="map-iframe" src=""></iframe>
   </div>
@@ -333,16 +224,13 @@ const LOADING_LOCATIONS = [
   { name:"Jaigad - Ratnagiri",                     lat:17.299386, lon:73.201151, state:"Maharashtra",   capacity:"",                                        type:"Load", ktt:"TPT070" },
 ];
 
-// Unique sorted states
 var allStates = [];
 LOADING_LOCATIONS.forEach(function(l) {
   if(l.state && allStates.indexOf(l.state) === -1) allStates.push(l.state);
 });
 allStates.sort();
-
 var activeState = "ALL";
 
-// Build state pills
 (function() {
   var c = document.getElementById("statePills");
   function makePill(label, value) {
@@ -359,8 +247,7 @@ var activeState = "ALL";
 function setStateFilter(state) {
   activeState = state;
   document.querySelectorAll(".pill").forEach(function(p) {
-    var matches = (state === "ALL" && p.textContent === "All States") ||
-                  (p.textContent === state);
+    var matches = (state === "ALL" && p.textContent === "All States") || (p.textContent === state);
     p.classList.toggle("active", matches);
   });
   filterLocations();
@@ -368,18 +255,14 @@ function setStateFilter(state) {
 
 function haversine(lat1,lon1,lat2,lon2) {
   var R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
-  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+
-        Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
-        Math.sin(dLon/2)*Math.sin(dLon/2);
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
-
 function getStatus(spd,ign) {
   if(spd>0 && ign==1) return "TRANSIT";
   if(spd==0 && ign==1) return "STOPPED";
   return "IDLE";
 }
-
 function fmtDist(km) {
   if(km<1) return (km*1000).toFixed(0)+" m";
   if(km<10) return km.toFixed(1)+" km";
@@ -407,14 +290,9 @@ var TOP_N = 5;
 function renderLocations(vehicles) {
   var grid = document.getElementById("locGrid");
   grid.innerHTML = "";
-
   LOADING_LOCATIONS.forEach(function(loc) {
     var withDist = vehicles.map(function(v) {
-      return {
-        vno:v.vno,
-        dist:haversine(parseFloat(v.lat), parseFloat(v.lon), loc.lat, loc.lon),
-        status:getStatus(v.spd, v.ign)
-      };
+      return { vno:v.vno, dist:haversine(parseFloat(v.lat),parseFloat(v.lon),loc.lat,loc.lon), status:getStatus(v.spd,v.ign) };
     }).sort(function(a,b){ return a.dist-b.dist; });
 
     var card = document.createElement("div");
@@ -423,61 +301,26 @@ function renderLocations(vehicles) {
     card.dataset.state = loc.state;
     card.dataset.ktt   = loc.ktt;
 
-    // Type badge class
     var typeCls = loc.type === "Both" ? "type-both" : loc.type === "Unload" ? "type-unload" : "type-load";
+    var capTags = loc.capacity ? loc.capacity.split(",").slice(0,4).map(function(c){ return "<span class='tag-cap'>"+c.trim()+"</span>"; }).join("") : "";
 
-    // Capacity tags (max 4)
-    var capTags = loc.capacity
-      ? loc.capacity.split(",").slice(0,4).map(function(c){
-          return "<span class='tag-cap'>"+c.trim()+"</span>";
-        }).join("")
-      : "";
+    var head = "<div class='loc-head'><div class='loc-top'><div class='loc-name'>"+loc.name+"</div><span class='loc-type-badge "+typeCls+"'>"+loc.type+"</span></div><div class='loc-info-row'><span class='tag-state'>"+loc.state+"</span><span class='tag-ktt'>"+loc.ktt+"</span></div>"+(capTags?"<div class='loc-info-row' style='margin-top:2px'>"+capTags+"</div>":"")+"<div class='loc-coords'>"+loc.lat.toFixed(5)+"&#176; N, "+loc.lon.toFixed(5)+"&#176; E</div></div>";
 
-    var head =
-      "<div class='loc-head'>" +
-        "<div class='loc-top'>" +
-          "<div class='loc-name'>"+loc.name+"</div>" +
-          "<span class='loc-type-badge "+typeCls+"'>"+loc.type+"</span>" +
-        "</div>" +
-        "<div class='loc-info-row'>" +
-          "<span class='tag-state'>"+loc.state+"</span>" +
-          "<span class='tag-ktt'>"+loc.ktt+"</span>" +
-        "</div>" +
-        (capTags ? "<div class='loc-info-row' style='margin-top:2px'>"+capTags+"</div>" : "") +
-        "<div class='loc-coords'>"+loc.lat.toFixed(5)+"° N, "+loc.lon.toFixed(5)+"° E</div>" +
-      "</div>";
-
-    // Vehicle rows
     var rows = "";
     if(withDist.length === 0) {
       rows = "<div class='no-veh'>No vehicle data available</div>";
     } else {
       withDist.forEach(function(v, i) {
-        var sc    = v.status==="TRANSIT" ? "s-transit" : v.status==="STOPPED" ? "s-stopped" : "s-idle";
+        var sc = v.status==="TRANSIT" ? "s-transit" : v.status==="STOPPED" ? "s-stopped" : "s-idle";
         var extra = i >= TOP_N ? " hidden-veh" : "";
-        rows += "<div class='veh-row"+extra+"'>" +
-          "<span class='veh-vno'>"+v.vno+"</span>" +
-          "<div class='veh-right'>" +
-            "<span class='veh-st "+sc+"'>"+v.status+"</span>" +
-            "<span class='veh-dist'>"+fmtDist(v.dist)+"</span>" +
-          "</div>" +
-        "</div>";
+        rows += "<div class='veh-row"+extra+"'><span class='veh-vno'>"+v.vno+"</span><div class='veh-right'><span class='veh-st "+sc+"'>"+v.status+"</span><span class='veh-dist'>"+fmtDist(v.dist)+"</span></div></div>";
       });
     }
 
-    var showMoreBtn = withDist.length > TOP_N
-      ? "<button class='show-more-btn' onclick='toggleMore(this)'>▼ Show "+(withDist.length-TOP_N)+" more</button>"
-      : "";
-
-    card.innerHTML = head +
-      "<div class='loc-vehicles'>" +
-        "<div class='loc-veh-hdr'>Nearby vehicles by distance</div>" +
-        rows + showMoreBtn +
-      "</div>";
-
+    var showMoreBtn = withDist.length > TOP_N ? "<button class='show-more-btn' onclick='toggleMore(this)'>&#9660; Show "+(withDist.length-TOP_N)+" more</button>" : "";
+    card.innerHTML = head + "<div class='loc-vehicles'><div class='loc-veh-hdr'>Nearby vehicles by distance</div>" + rows + showMoreBtn + "</div>";
     grid.appendChild(card);
   });
-
   document.getElementById("locCount").textContent = LOADING_LOCATIONS.length + " of " + LOADING_LOCATIONS.length + " locations";
   filterLocations();
 }
@@ -488,14 +331,13 @@ function toggleMore(btn) {
   var expanded = btn.dataset.expanded === "1";
   hidden.forEach(function(el){ el.style.display = expanded ? "none" : "flex"; });
   btn.dataset.expanded = expanded ? "0" : "1";
-  btn.textContent = expanded ? ("▼ Show "+hidden.length+" more") : "▲ Show less";
+  btn.textContent = expanded ? ("&#9660; Show "+hidden.length+" more") : "&#9650; Show less";
 }
 
 function renderVehicles(vehicles) {
   var grid = document.getElementById("vehGrid");
   grid.innerHTML = "";
   var transit=0, stopped=0, idle=0;
-
   vehicles.forEach(function(v) {
     var st   = getStatus(v.spd, v.ign);
     var cls  = st==="TRANSIT" ? "transit" : st==="STOPPED" ? "stopped" : "idle";
@@ -503,26 +345,16 @@ function renderVehicles(vehicles) {
     if(st==="TRANSIT") transit++;
     else if(st==="STOPPED") stopped++;
     else idle++;
-
     var card = document.createElement("div");
     card.className = "v-card "+cls;
-    card.innerHTML =
-      "<div class='v-vno'>🚛 "+v.vno+"</div>" +
-      "<span class='v-badge "+bcls+"'>"+st+"</span>" +
-      "<div class='v-row'><span class='v-lbl'>Speed</span><span class='v-val'>"+v.spd+" km/h</span></div>" +
-      "<div class='v-row'><span class='v-lbl'>Ignition</span><span class='v-val'>"+(v.ign==1?"ON":"OFF")+"</span></div>" +
-      "<div class='v-row'><span class='v-lbl'>Course</span><span class='v-val'>"+v.crs+"°</span></div>" +
-      "<div class='v-row'><span class='v-lbl'>GPS Time</span><span class='v-val'>"+v.time+"</span></div>" +
-      "<div class='v-coords'>"+parseFloat(v.lat).toFixed(5)+"° N &nbsp;|&nbsp; "+parseFloat(v.lon).toFixed(5)+"° E</div>" +
-      "<button class='mapbtn' onclick='openMap("+v.lat+","+v.lon+",\""+v.vno+"\")'>📍 View on Map</button>";
+    card.innerHTML = "<div class='v-vno'>&#128667; "+v.vno+"</div><span class='v-badge "+bcls+"'>"+st+"</span><div class='v-row'><span class='v-lbl'>Speed</span><span class='v-val'>"+v.spd+" km/h</span></div><div class='v-row'><span class='v-lbl'>Ignition</span><span class='v-val'>"+(v.ign==1?"ON":"OFF")+"</span></div><div class='v-row'><span class='v-lbl'>Course</span><span class='v-val'>"+v.crs+"&#176;</span></div><div class='v-row'><span class='v-lbl'>GPS Time</span><span class='v-val'>"+v.time+"</span></div><div class='v-coords'>"+parseFloat(v.lat).toFixed(5)+"&#176; N &nbsp;|&nbsp; "+parseFloat(v.lon).toFixed(5)+"&#176; E</div><button class='mapbtn' onclick='openMap("+v.lat+","+v.lon+",\""+v.vno+"\")'>&#128205; View on Map</button>";
     grid.appendChild(card);
   });
-
   document.getElementById("cTotal").innerText   = vehicles.length;
   document.getElementById("cTransit").innerText = transit;
   document.getElementById("cStopped").innerText = stopped;
   document.getElementById("cIdle").innerText    = idle;
-  document.getElementById("lastUpdate").innerText = "Live · "+new Date().toLocaleTimeString();
+  document.getElementById("lastUpdate").innerText = "Live &#183; "+new Date().toLocaleTimeString();
 }
 
 function fetchVehicles() {
@@ -542,7 +374,7 @@ function fetchVehicles() {
 }
 
 function openMap(lat,lon,vno) {
-  document.getElementById("modal-title").innerText = "📍 "+vno+" — Live Location";
+  document.getElementById("modal-title").innerText = "&#128205; "+vno+" &#8212; Live Location";
   document.getElementById("map-iframe").src = "https://maps.google.com/maps?q="+lat+","+lon+"&z=15&output=embed";
   document.getElementById("mapModal").classList.add("show");
 }
