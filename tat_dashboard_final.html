@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thenpandiyan — TAT Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #f4f6f4;
+    --surface:    #ffffff;
+    --border:     #e2e8e2;
+    --border2:    #d0d8d0;
+    --green:      #1a7a3f;
+    --green-mid:  #22a854;
+    --green-lt:   #e8f5ee;
+    --header-bg:  #111714;
+    --text:       #1a2020;
+    --text2:      #4a5a50;
+    --muted:      #8a9e90;
+    --transit:    #16a34a;
+    --amber:      #d97706;
+    --red:        #dc2626;
+    --blue:       #2563eb;
+    --transit-bg: #f0fdf4;
+    --amber-bg:   #fffbeb;
+    --red-bg:     #fef2f2;
+    --blue-bg:    #eff6ff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* ── Header ── */
+  .header { background:var(--header-bg); padding:0 28px; height:52px; display:flex; align-items:center; justify-content:space-between; }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .logo-box { width:34px; height:34px; background:var(--green); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:white; font-family:'DM Mono',monospace; flex-shrink:0; }
+  .brand-name { font-size:15px; font-weight:600; color:#fff; }
+  .brand-sub  { font-size:11px; color:var(--green-mid); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
+  .header-right { display:flex; align-items:center; gap:10px; }
+  .nav-pill { font-size:11px; font-weight:500; padding:5px 13px; border-radius:20px; cursor:pointer; color:#8a9e90; border:1px solid transparent; transition:all .15s; text-decoration:none; letter-spacing:0.03em; }
+  .nav-pill:hover { color:white; }
+  .nav-pill.active { background:var(--green); color:white; }
+  .fleet-tag { background:transparent; border:1px solid #3a5c44; color:#6abf82; font-size:11px; font-weight:600; padding:4px 12px; border-radius:4px; letter-spacing:0.1em; text-transform:uppercase; }
+
+  /* ── Tab bar ── */
+  .tabs { background:var(--surface); border-bottom:1px solid var(--border); display:flex; padding:0 28px; }
+  .tab { padding:14px 20px 12px; font-size:13px; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; white-space:nowrap; }
+  .tab.active { color:var(--green); border-bottom-color:var(--green); }
+  .tab:hover:not(.active) { color:var(--text2); }
+
+  /* ── Tab panels ── */
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* ── Section headers ── */
+  .section-wrap { padding:24px 28px 0; }
+  .section-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .section-title { font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--green); display:flex; align-items:center; gap:8px; }
+  .section-title::before { content:""; display:inline-block; width:28px; height:2px; background:var(--green); border-radius:2px; }
+
+  /* ── Summary metric cards ── */
+  .metric-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:12px; padding-bottom:24px; }
+  .metric-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
+  .metric-card.accent { border-left:3px solid var(--green); }
+  .metric-lbl { font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+  .metric-val { font-family:'DM Mono',monospace; font-size:24px; font-weight:500; color:var(--text); line-height:1; }
+  .metric-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+  .metric-delta { font-size:11px; font-weight:600; margin-top:4px; }
+  .delta-good { color:var(--transit); }
+  .delta-bad  { color:var(--red); }
+
+  /* ── Filter bar ── */
+  .filter-bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+  .filter-bar select, .filter-bar input[type="date"] {
+    background:var(--surface); border:1px solid var(--border2); color:var(--text);
+    padding:7px 12px; border-radius:6px; font-size:13px; outline:none;
+    font-family:'Inter',sans-serif; transition:border-color .2s; cursor:pointer;
+  }
+  .filter-bar select:focus, .filter-bar input:focus { border-color:var(--green); }
+  .filter-lbl { font-size:12px; color:var(--muted); font-weight:500; white-space:nowrap; }
+
+  /* ── Trip table ── */
+  .table-wrap { overflow-x:auto; background:var(--surface); border:1px solid var(--border); border-radius:8px; margin-bottom:24px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  thead tr { border-bottom:1px solid var(--border); }
+  thead th { padding:10px 14px; text-align:left; font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap; }
+  tbody tr { border-bottom:1px solid #f0f4f0; transition:background .1s; }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:#f8faf8; }
+  tbody td { padding:10px 14px; color:var(--text); vertical-align:middle; }
+  .mono { font-family:'DM Mono',monospace; }
+  .text-muted { color:var(--muted); }
+
+  /* Status badges */
+  .badge { display:inline-block; font-size:10px; font-weight:600; padding:2px 8px; border-radius:3px; text-transform:uppercase; letter-spacing:0.05em; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .b-done     { background:var(--transit-bg); color:var(--transit); }
+  .b-progress { background:var(--blue-bg); color:var(--blue); }
+  .b-exc      { background:var(--amber-bg); color:var(--amber); }
+  .b-warn     { background:var(--red-bg); color:var(--red); }
+
+  /* Variance cells */
+  .var-good { color:var(--transit); font-weight:600; font-family:'DM Mono',monospace; }
+  .var-bad  { color:var(--red); font-weight:600; font-family:'DM Mono',monospace; }
+  .var-ok   { color:var(--muted); font-family:'DM Mono',monospace; }
+
+  /* ── Time bucket bar ── */
+  .bucket-bar { height:8px; border-radius:4px; overflow:hidden; display:flex; min-width:80px; }
+  .bb-transit { background:var(--transit); }
+  .bb-dwell   { background:#86c4a0; }
+  .bb-dead    { background:#d4a843; }
+  .bb-idle    { background:#e0a5a5; }
+
+  /* ── Avg TAT section ── */
+  .route-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:12px; padding-bottom:24px; }
+  .route-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; }
+  .route-hdr { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+  .route-from-to { font-size:13px; font-weight:600; color:var(--text); line-height:1.4; }
+  .route-trips { font-size:11px; color:var(--muted); margin-top:2px; }
+  .route-tat-big { font-family:'DM Mono',monospace; font-size:22px; font-weight:500; color:var(--green); }
+  .route-tat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+  .bucket-legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+  .bleg { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--text2); }
+  .bleg-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+  .route-bar-full { height:10px; border-radius:5px; overflow:hidden; display:flex; margin-top:10px; }
+
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">TT</div>
+    <div>
+      <div class="brand-name">Thenpandiyan Transport</div>
+      <div class="brand-sub">TAT Analytics</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="data-source-badge" style="font-size:11px;color:var(--amber);font-family:'DM Mono',monospace">Loading...</span>
+    <a href="#" class="nav-pill">Fleet Dashboard</a>
+    <a href="#" class="nav-pill active">TAT Analytics</a>
+    <button class="refresh-btn" onclick="fetchLiveData()">&#8635; Refresh</button>
+    <span class="fleet-tag">LPG Bulk Transport</span>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('dashboard', this)">Dashboard</div>
+  <div class="tab" onclick="switchTab('trips', this)">Trip Log</div>
+  <div class="tab" onclick="switchTab('routes', this)">Route Averages</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: DASHBOARD
+════════════════════════════════════════════ -->
+<div id="tab-dashboard" class="panel active">
+  <div class="section-wrap">
+    <div class="section-hdr">
+      <div class="section-title">Summary — all trips</div>
+      <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Mock data · connect API to go live</div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card accent">
+        <div class="metric-lbl">Avg TAT (all routes)</div>
+        <div class="metric-val">18.4 h</div>
+        <div class="metric-sub">last 30 days</div>
+      </div>
+      <div class="metric-card accent">
+        <div class="metric-lbl">Schedule adherence</div>
+        <div class="metric-val">68%</div>
+        <div class="metric-sub delta-bad">↓ target 80%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-lbl">Total trips</div>
+        <div class="metric-val">47</div>
+        <div class="metric-sub">this month</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-lbl">Avg TAT variance</div>
+        <div class="metric-val">+2.1 h</div>
+        <div class="metric-sub delta-bad">over planned</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-lbl">Productive time %</div>
+        <div class="metric-val">71%</div>
+        <div class="metric-sub delta-good">transit + dwell</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-lbl">Deadhead + idle %</div>
+        <div class="metric-val">29%</div>
+        <div class="metric-sub delta-bad">empty movement</div>
+      </div>
+    </div>
+
+    <!-- Time bucket breakdown -->
+    <div class="section-hdr" style="padding-top:4px">
+      <div class="section-title">Fleet-wide time bucket breakdown</div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px;margin-bottom:24px;">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+        <div class="bleg"><div class="bleg-dot" style="background:var(--transit)"></div>Transit time <strong style="margin-left:4px;color:var(--text)">52%</strong></div>
+        <div class="bleg"><div class="bleg-dot" style="background:#86c4a0"></div>Dwell at locations <strong style="margin-left:4px;color:var(--text)">19%</strong></div>
+        <div class="bleg"><div class="bleg-dot" style="background:#d4a843"></div>Deadhead (empty) <strong style="margin-left:4px;color:var(--text)">16%</strong></div>
+        <div class="bleg"><div class="bleg-dot" style="background:#e0a5a5"></div>Idle / wait <strong style="margin-left:4px;color:var(--text)">13%</strong></div>
+      </div>
+
+      <!-- Per-vehicle bars -->
+      <div id="vehicle-buckets"></div>
+    </div>
+
+    <!-- Top delay reasons -->
+    <div class="section-hdr" style="padding-top:4px">
+      <div class="section-title">TAT variance by reason code</div>
+    </div>
+    <div id="reason-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding-bottom:28px;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: TRIP LOG
+════════════════════════════════════════════ -->
+<div id="tab-trips" class="panel">
+  <div class="section-wrap">
+    <div class="section-hdr" style="margin-bottom:8px">
+      <div class="section-title">Trip log</div>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-lbl">Vehicle</span>
+      <select id="f-vehicle" onchange="renderTrips()"><option value="">All vehicles</option></select>
+      <span class="filter-lbl">Status</span>
+      <select id="f-status" onchange="renderTrips()">
+        <option value="">All</option>
+        <option value="COMPLETE">Complete</option>
+        <option value="IN PROGRESS">In Progress</option>
+        <option value="EXCEPTION">Exception</option>
+      </select>
+      <span class="filter-lbl">Route</span>
+      <select id="f-route" onchange="renderTrips()"><option value="">All routes</option></select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Vehicle</th>
+            <th>Loading point</th>
+            <th>Final unload</th>
+            <th>TAT start</th>
+            <th>TAT end</th>
+            <th>Planned TAT</th>
+            <th>Actual TAT</th>
+            <th>Variance</th>
+            <th>Time buckets</th>
+            <th>Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="trip-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: ROUTE AVERAGES
+════════════════════════════════════════════ -->
+<div id="tab-routes" class="panel">
+  <div class="section-wrap">
+    <div class="section-hdr" style="margin-bottom:4px">
+      <div class="section-title">Average TAT by route</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;padding-left:36px;">Bars show time bucket split. Variance = actual − planned. Flag if &gt;2 h over.</p>
+    <div class="route-grid" id="route-grid"></div>
+  </div>
+</div>
+
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────
+// STEP 1: Paste your Zoho microservice URL below after creating getTATData
+// ─────────────────────────────────────────────────────────────────────────
+var API_URL = "https://www.zohoapis.in/creator/custom/thenpandiyan/getTATData?publickey=3knU6FRKDqp374dsZAYW22CdB";
+// Example: "https://www.zohoapis.in/creator/custom/thenpandiyan/getTATData?publickey=xxx"
+
+// ─────────────────────────────────────────────────────────────────────────
+// Global state
+// ─────────────────────────────────────────────────────────────────────────
+var ALL_TRIPS   = [];
+var IS_LIVE     = false;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Render helpers — shared by live and mock paths
+// ─────────────────────────────────────────────────────────────────────────
+function fmtH(h) {
+  if(h === null || h === undefined || h === "") return "—";
+  var n = parseFloat(h);
+  if(isNaN(n)) return "—";
+  var hr = Math.floor(n), mn = Math.round((n - hr) * 60);
+  return hr + "h " + (mn < 10 ? "0" + mn : mn) + "m";
+}
+function varCls(v) { if(v===null||v===undefined) return "var-ok"; return v > 0 ? "var-bad" : "var-good"; }
+function varStr(v) { if(v===null||v===undefined) return "—"; return (v > 0 ? "+" : "") + parseFloat(v).toFixed(1) + "h"; }
+function bucketBar(tr,dw,de,id) {
+  return "<div class='bucket-bar' title='Transit "+tr+"% | Dwell "+dw+"% | Deadhead "+de+"% | Idle "+id+"%'>" +
+    "<div class='bb-transit' style='width:"+tr+"%'></div>" +
+    "<div class='bb-dwell'   style='width:"+dw+"%'></div>" +
+    "<div class='bb-dead'    style='width:"+de+"%'></div>" +
+    "<div class='bb-idle'    style='width:"+id+"%'></div>" +
+  "</div>";
+}
+function statusBadge(s) {
+  var m = { COMPLETE:"b-done", "IN PROGRESS":"b-progress", "NO GPS DATA":"b-exc", EXCEPTION:"b-exc" };
+  return "<span class='badge "+(m[s]||"b-exc")+"'>"+(s||"—")+"</span>";
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// LIVE DATA — fetch from Zoho microservice
+// ─────────────────────────────────────────────────────────────────────────
+function fetchLiveData() {
+  if(!API_URL || API_URL.indexOf("YOUR_ZOHO") !== -1) {
+    // API not configured yet — load mock data
+    loadMockData();
+    return;
+  }
+
+  document.getElementById("data-source-badge").textContent = "Connecting…";
+
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ payload: {} })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    // Zoho standard response wraps data in {code:3000, result: "stringified map"}
+    var parsed = data;
+    if(data.code === 3000 && data.result) {
+      try {
+        parsed = typeof data.result === "string" ? JSON.parse(data.result) : data.result;
+      } catch(e) {
+        parsed = data.result;
+      }
+    }
+
+    if(parsed.status === "success" && parsed.trips) {
+      IS_LIVE = true;
+      document.getElementById("data-source-badge").textContent = "Live · " + new Date().toLocaleTimeString();
+      document.getElementById("data-source-badge").style.color = "var(--transit)";
+
+      ALL_TRIPS = parsed.trips.map(function(t) {
+        return {
+          id:      t.id || "—",
+          vno:     t.vno || "",
+          load:    t.load || "—",
+          unload:  t.unload || "—",
+          start:   t.tat_start || null,
+          end:     t.tat_end   || null,
+          actual:  t.actual_hours ? parseFloat(t.actual_hours) : null,
+          planned: null,
+          status:  t.status || "—",
+          reason:  "—",
+          transit: 0, dwell: 0, dead: 0, idle: 0
+        };
+      });
+
+      renderAllTabs(parsed.summary);
+    } else {
+      showError("API returned: " + JSON.stringify(data));
+    }
+  })
+  .catch(function(err) {
+    showError("Could not reach API: " + err.message + " — showing demo data");
+    loadMockData();
+  });
+}
+
+function showError(msg) {
+  document.getElementById("data-source-badge").textContent = "Error — demo data";
+  document.getElementById("data-source-badge").style.color = "var(--red)";
+  console.warn(msg);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// MOCK DATA — shown when API not yet wired up
+// ─────────────────────────────────────────────────────────────────────────
+function loadMockData() {
+  document.getElementById("data-source-badge").textContent = "Demo data · Connect API to go live";
+  document.getElementById("data-source-badge").style.color = "var(--amber)";
+
+  ALL_TRIPS = [
+    { id:"IND-1042", vno:"TN88B7859",  load:"IPPL - Chennai", unload:"TVS HOSUR U/L",          start:"2026-05-08 05:52", end:"2026-05-08 15:15", planned:9.0,  actual:9.4,  transit:65, dwell:25, dead:0, idle:10, reason:"PLANNED",   status:"COMPLETE" },
+    { id:"IND-1043", vno:"TN88B7859",  load:"IPPL - Chennai", unload:"TVS HOSUR U/L",          start:"2026-05-08 15:30", end:"2026-05-09 01:33", planned:9.0,  actual:10.1, transit:63, dwell:25, dead:0, idle:12, reason:"CUST-SHORT", status:"COMPLETE" },
+    { id:"IND-1051", vno:"TN88B2559",  load:"IPPL - Chennai", unload:"NAMAKKAL NEW WORKSHOP",  start:"2026-05-11 10:18", end:"2026-05-11 11:49", planned:2.0,  actual:1.5,  transit:67, dwell:33, dead:0, idle:0,  reason:"PLANNED",   status:"COMPLETE" },
+    { id:"IND-1052", vno:"TN88F2559",  load:"IPPL - Chennai", unload:"NAMAKKAL NEW WORKSHOP",  start:"2026-05-11 10:18", end:"2026-05-11 12:35", planned:2.5,  actual:2.3,  transit:61, dwell:39, dead:0, idle:0,  reason:"PLANNED",   status:"COMPLETE" },
+    { id:"IND-1055", vno:"TN88J9659",  load:"IPPL - Chennai", unload:"IPPL LOADING POINT CHN", start:"2026-05-12 10:41", end:null,               planned:8.0,  actual:null, transit:0,  dwell:0,  dead:0, idle:0,  reason:"—",         status:"IN PROGRESS" },
+    { id:"IND-1058", vno:"TN88F2459",  load:"IPPL - Chennai", unload:"IPPL LOADING POINT CHN", start:"2026-05-12 09:47", end:null,               planned:8.0,  actual:null, transit:0,  dwell:0,  dead:0, idle:0,  reason:"—",         status:"IN PROGRESS" },
+    { id:"IND-1030", vno:"TN88H9059",  load:"IPPL - Chennai", unload:"IPPL LOADING POINT CHN", start:"2026-05-11 15:56", end:"2026-05-11 23:10", planned:7.5,  actual:7.2,  transit:67, dwell:29, dead:0, idle:4,  reason:"PLANNED",   status:"COMPLETE" },
+    { id:"IND-1038", vno:"TN47AJ8208", load:"IPPL - Chennai", unload:"IPPL LOADING POINT CHN", start:"2026-05-11 23:10", end:"2026-05-12 08:05", planned:8.0,  actual:8.9,  transit:62, dwell:28, dead:0, idle:10, reason:"CUST-OVER", status:"COMPLETE" },
+    { id:"IND-1025", vno:"TN25BC7961", load:"IPPL - Chennai", unload:"IPPL LOADING POINT CHN", start:"2026-05-11 08:27", end:"2026-05-11 15:53", planned:8.0,  actual:7.4,  transit:66, dwell:30, dead:0, idle:4,  reason:"PLANNED",   status:"COMPLETE" },
+  ];
+
+  var mockSummary = {
+    total_trips: 9, complete_trips: 7, in_progress: 2, avg_tat_hours: 7.97
+  };
+  renderAllTabs(mockSummary);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// RENDER — shared for both live and mock
+// ─────────────────────────────────────────────────────────────────────────
+function renderAllTabs(summary) {
+  renderDashboard(summary);
+  populateFilters();
+  renderTrips();
+  renderRoutes();
+}
+
+// ── Dashboard tab ──
+function renderDashboard(summary) {
+  if(!summary) return;
+  var avgH   = summary.avg_tat_hours ? parseFloat(summary.avg_tat_hours) : 0;
+  var total  = summary.total_trips   || 0;
+  var comp   = summary.complete_trips|| 0;
+  var inprog = summary.in_progress   || 0;
+  var adh    = total > 0 ? Math.round((comp / total) * 100) : 0;
+
+  document.getElementById("cTotal").innerText   = total;
+  document.getElementById("cTransit").innerText = inprog;
+  document.getElementById("cStopped").innerText = comp;
+  document.getElementById("cIdle").innerText    = total - comp - inprog;
+  document.getElementById("m-avg-tat").innerText   = fmtH(avgH);
+  document.getElementById("m-adherence").innerText = adh + "%";
+  document.getElementById("m-total").innerText     = total;
+  document.getElementById("m-inprog").innerText     = inprog;
+
+  // Vehicle bucket bars — computed from trip data
+  var vehMap = {};
+  ALL_TRIPS.forEach(function(t) {
+    if(!vehMap[t.vno]) vehMap[t.vno] = { transit:0, dwell:0, dead:0, idle:0, count:0 };
+    vehMap[t.vno].transit += (t.transit||0);
+    vehMap[t.vno].dwell   += (t.dwell||0);
+    vehMap[t.vno].dead    += (t.dead||0);
+    vehMap[t.vno].idle    += (t.idle||0);
+    vehMap[t.vno].count++;
+  });
+  var vb = document.getElementById("vehicle-buckets");
+  vb.innerHTML = "";
+  Object.keys(vehMap).forEach(function(vno) {
+    var v = vehMap[vno];
+    var tot = (v.transit + v.dwell + v.dead + v.idle) || 1;
+    var tr = Math.round(v.transit/tot*100), dw = Math.round(v.dwell/tot*100);
+    var de = Math.round(v.dead/tot*100), id = 100-tr-dw-de;
+    vb.innerHTML += "<div style='display:flex;align-items:center;gap:12px;margin-bottom:8px'>" +
+      "<span style='font-family:DM Mono,monospace;font-size:11px;color:var(--text);min-width:110px'>"+vno+"</span>" +
+      bucketBar(tr, dw, de, id) +
+      "<span style='font-size:10px;color:var(--muted);min-width:100px;font-family:DM Mono,monospace'>"+(tr+dw)+"% productive</span>" +
+    "</div>";
+  });
+}
+
+// ── Trip log tab ──
+function populateFilters() {
+  var vSel = document.getElementById("f-vehicle");
+  var rSel = document.getElementById("f-route");
+  vSel.innerHTML = "<option value=''>All vehicles</option>";
+  rSel.innerHTML = "<option value=''>All routes</option>";
+  var vnos = [], routes = [];
+  ALL_TRIPS.forEach(function(t) {
+    if(vnos.indexOf(t.vno) === -1) vnos.push(t.vno);
+    var r = t.load + "→" + t.unload;
+    if(routes.indexOf(r) === -1) routes.push(r);
+  });
+  vnos.forEach(function(v) { vSel.innerHTML += "<option value='"+v+"'>"+v+"</option>"; });
+  routes.forEach(function(r) { rSel.innerHTML += "<option value='"+r+"'>"+r+"</option>"; });
+}
+
+function renderTrips() {
+  var fv = document.getElementById("f-vehicle").value;
+  var fs = document.getElementById("f-status").value;
+  var fr = document.getElementById("f-route").value;
+  var trips = ALL_TRIPS.filter(function(t) {
+    if(fv && t.vno !== fv) return false;
+    if(fs && t.status !== fs) return false;
+    if(fr && (t.load+"→"+t.unload) !== fr) return false;
+    return true;
+  });
+  var html = "";
+  trips.forEach(function(t) {
+    var v = (t.actual !== null && t.planned !== null) ? (t.actual - t.planned) : null;
+    html += "<tr>" +
+      "<td class='mono' style='font-size:11px;color:var(--muted)'>"+t.id+"</td>" +
+      "<td class='mono'>"+t.vno+"</td>" +
+      "<td style='max-width:140px;font-size:12px'>"+t.load+"</td>" +
+      "<td style='max-width:140px;font-size:12px'>"+t.unload+"</td>" +
+      "<td class='mono' style='font-size:11px;white-space:nowrap'>"+(t.start||"—")+"</td>" +
+      "<td class='mono' style='font-size:11px;white-space:nowrap'>"+(t.end||"—")+"</td>" +
+      "<td class='mono'>"+fmtH(t.planned)+"</td>" +
+      "<td class='mono'>"+fmtH(t.actual)+"</td>" +
+      "<td class='"+varCls(v)+"'>"+varStr(v)+"</td>" +
+      "<td>"+bucketBar(t.transit||0, t.dwell||0, t.dead||0, t.idle||0)+"</td>" +
+      "<td>"+statusBadge(t.status)+"</td>" +
+    "</tr>";
+  });
+  document.getElementById("trip-tbody").innerHTML = html ||
+    "<tr><td colspan='11' style='text-align:center;color:var(--muted);padding:24px'>No trips match the filter</td></tr>";
+}
+
+// ── Route averages tab ──
+function renderRoutes() {
+  var grid = document.getElementById("route-grid");
+  grid.innerHTML = "";
+  var routeMap = {};
+  ALL_TRIPS.forEach(function(t) {
+    if(t.status !== "COMPLETE" || t.actual === null) return;
+    var key = t.load + "|||" + t.unload;
+    if(!routeMap[key]) routeMap[key] = { from:t.load, to:t.unload, trips:0, totalH:0 };
+    routeMap[key].trips++;
+    routeMap[key].totalH += t.actual;
+  });
+  var keys = Object.keys(routeMap);
+  if(keys.length === 0) {
+    grid.innerHTML = "<div style='color:var(--muted);font-size:13px;padding:20px'>No completed trips yet — data will appear as trips complete.</div>";
+    return;
+  }
+  keys.forEach(function(k) {
+    var r = routeMap[k];
+    var avg = r.trips > 0 ? (r.totalH / r.trips) : 0;
+    grid.innerHTML += "<div class='route-card'>" +
+      "<div class='route-hdr'>" +
+        "<div><div class='route-from-to'>"+r.from+" → "+r.to+"</div>" +
+        "<div class='route-trips'>"+r.trips+" completed trip"+(r.trips!==1?"s":"")+"</div></div>" +
+        "<div style='text-align:right'><div class='route-tat-big'>"+fmtH(avg)+"</div><div class='route-tat-lbl'>Avg actual TAT</div></div>" +
+      "</div>" +
+      "<div style='font-size:11px;color:var(--muted);margin-top:8px'>Total: "+fmtH(r.totalH)+" across "+r.trips+" trip"+(r.trips!==1?"s":"")+"</div>" +
+    "</div>";
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Tab switching
+// ─────────────────────────────────────────────────────────────────────────
+function switchTab(id, el) {
+  document.querySelectorAll(".panel").forEach(function(p){ p.classList.remove("active"); });
+  document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
+  document.getElementById("tab-"+id).classList.add("active");
+  el.classList.add("active");
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────
+// Boot
+// ─────────────────────────────────────────────────────────────────────────
+fetchLiveData();
+</script>
+</body>
+</html>
